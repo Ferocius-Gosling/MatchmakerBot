@@ -2,8 +2,9 @@ package com.company;
 
 public class AnswersStorage {
     public static String helpMessage =
-            "Напишите /reg, чтобы зарегистрировать себя в базе. \n" +
-                    "Напишите /help, чтобы вывести это сообщение ещё раз";
+            "Напишите /reg, чтобы зарегистрировать себя в базе.\n" +
+                    "Напишите /help, чтобы вывести это сообщение ещё раз.\n" +
+            "Напишите /showbio, чтобы посмотреть свою анкету.\n";
 
     public static String defaultMessage = "Не понимаю вашего запроса." +
             " Вызовите /help для справки.";
@@ -15,9 +16,14 @@ public class AnswersStorage {
     public static String regCityMessage = "Напишите город в котором вы находитесь.";
     public static String regInfoMessage = "Расскажите о себе одним сообщением.";
     public static String regSuccesfull = "Регистрация завершена поздравляю.";
-    public static String startMessage = String.format("Приветствую странник. Меня зовут %s!\n",botName);
+    public static String startMessage = String.format("Приветствую странник. Меня зовут %s!\n", botName);
     public static String showbioErrorMessage = "Вы ещё не зарегистрировались. \n" +
             "Я не могу показать вам вашу анкету.";
     public static String regErrorMessage = "Вы уже зарегистрированы.";
+
+    public static String getUserInfo(User user) {
+        return String.format("Имя: %s\nВозраст: %d\nГород: %s\n++++Описание++++\n%s",
+                user.getName(), user.getAge(), user.getCity(), user.getInfo());
+    }
 
 }

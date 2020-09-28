@@ -35,13 +35,15 @@ public class DialogLogic {
             case REG_INFO:
                 user.setInfo(mes);
                 user.changeCurrentState(States.MENU);
-                yield AnswersStorage.regSuccesfull;
+                yield AnswersStorage.getUserInfo(user);
             case MENU:
                 yield switch (mes){
                     case "/help":
                         yield getHelp();
                     case "/reg":
                         yield AnswersStorage.regErrorMessage;
+                    case "/showbio":
+                        yield AnswersStorage.getUserInfo(user);
                     default:
                         yield AnswersStorage.defaultMessage;
                 };

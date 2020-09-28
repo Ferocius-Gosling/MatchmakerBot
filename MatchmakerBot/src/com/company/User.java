@@ -35,6 +35,10 @@ public class User {
     public States getCurrentState() {
         return this.state;
     }
+    public String getName(){return this.name;}
+    public int getAge(){return this.age;}
+    public String getCity(){return this.city;}
+    public String getInfo(){return this.info;}
 
     public void changeCurrentState(States nextState) {
         //mb validation
