@@ -7,7 +7,17 @@ public class AnswersStorage {
 
     public static String defaultMessage = "Не понимаю вашего запроса." +
             " Вызовите /help для справки.";
-    private static String botName = "MatchmakerBot - Вячесlove";
-    public static String registerMessage = "Регистрация: Напишите своё имя.";
+    private final static String botName = "MatchmakerBot - Вячесlove";
+    public static String registerNameMessage = "Регистрация: Напишите своё имя.";
+    public static String regAgeMessage = "Напишите свой возраст арабскими цифрами.";
+    public static String wrongAgeMessage = "Я же попросил написать возраст арабскими цифрами!\n" +
+            "Перепишите пожалуйста.";
+    public static String regCityMessage = "Напишите город в котором вы находитесь.";
+    public static String regInfoMessage = "Расскажите о себе одним сообщением.";
+    public static String regSuccesfull = "Регистрация завершена поздравляю.";
     public static String startMessage = "Приветствую странник. Меня зовут {}".format(botName);
+    public static String showbioErrorMessage = "Вы ещё не зарегистрировались. \n" +
+            "Я не могу показать вам вашу анкету.";
+    public static String regErrorMessage = "Вы уже зарегистрированы.";
+
 }

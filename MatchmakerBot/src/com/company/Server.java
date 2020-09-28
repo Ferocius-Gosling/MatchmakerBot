@@ -25,6 +25,6 @@ public class Server {
 
     public String replyToUser(User user, String messageFromUser)
     {
-        return logic.getResponse(messageFromUser);
+        return logic.getResponse(user, messageFromUser);
     }
 }
