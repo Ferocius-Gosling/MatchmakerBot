@@ -3,7 +3,7 @@ package test;
 
 import com.company.AnswersStorage;
 import com.company.DialogLogic;
-import com.company.States;
+import com.company.DialogStates;
 import com.company.User;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +27,8 @@ public class DialogLogicTest {
     @Test
     public void testRegAge(){
         var user = new User(1);
-        user.changeCurrentState(States.REG_AGE);
+        user.changeCurrentState(DialogStates.REG_AGE);
+        user.setReg(true);
         var response = logic.getResponse(user, "20");
         Assert.assertEquals(response, AnswersStorage.regCityMessage);
     }
@@ -35,7 +36,8 @@ public class DialogLogicTest {
     @Test
     public void testRegAgeIncorrect(){
         var user = new User(1);
-        user.changeCurrentState(States.REG_AGE);
+        user.changeCurrentState(DialogStates.REG_AGE);
+        user.setReg(true);
         var resp = logic.getResponse(user, "Мне двадцать лет");
         Assert.assertEquals(resp, AnswersStorage.wrongAgeMessage);
     }
@@ -52,7 +54,7 @@ public class DialogLogicTest {
         Assert.assertEquals(name, AnswersStorage.regAgeMessage);
         Assert.assertEquals(age, AnswersStorage.regCityMessage);
         Assert.assertEquals(city, AnswersStorage.regInfoMessage);
-        Assert.assertEquals(info, AnswersStorage.regSuccesfull);
+        Assert.assertEquals(info, AnswersStorage.getUserInfo(user));
     }
 
     @Test

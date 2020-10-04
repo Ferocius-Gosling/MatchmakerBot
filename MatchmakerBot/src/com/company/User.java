@@ -1,10 +1,9 @@
 package com.company;
 
-import java.text.ParseException;
-
 public class User {
     private int id;
-    private States state;
+    private boolean isReg;
+    private DialogStates state;
     private String name;
     private int age;
     private String city;
@@ -13,7 +12,7 @@ public class User {
 
     public User(int id) {
         this.id = id;
-        this.state = States.START;
+        this.state = DialogStates.START;
     }
 
     public void setName(String name){
@@ -32,7 +31,15 @@ public class User {
         this.info = info;
     }
 
-    public States getCurrentState() {
+    public void setReg(boolean flag){
+        this.isReg = flag;
+    }
+
+    public boolean isReg(){
+        return this.isReg;
+    }
+
+    public DialogStates getCurrentState() {
         return this.state;
     }
     public String getName(){return this.name;}
@@ -40,7 +47,7 @@ public class User {
     public String getCity(){return this.city;}
     public String getInfo(){return this.info;}
 
-    public void changeCurrentState(States nextState) {
+    public void changeCurrentState(DialogStates nextState) {
         //mb validation
         this.state = nextState;
     }
