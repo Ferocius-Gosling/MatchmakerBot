@@ -1,16 +1,15 @@
 package com.company;
 
 public class User {
-    private int id;
+    private long id;
     private boolean isReg;
     private DialogStates state;
     private String name;
     private int age;
     private String city;
     private String info;
-    //мб таблица для кон.автомата, дабы можно было прямо по ней выводить на экран доступные пути для юзера
 
-    public User(int id) {
+    public User(long id) {
         this.id = id;
         this.state = DialogStates.START;
     }
@@ -46,6 +45,7 @@ public class User {
     public int getAge(){return this.age;}
     public String getCity(){return this.city;}
     public String getInfo(){return this.info;}
+    public long getId(){return this.id;}
 
     public void changeCurrentState(DialogStates nextState) {
         //mb validation
