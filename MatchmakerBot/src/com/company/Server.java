@@ -3,18 +3,18 @@ package com.company;
 import java.util.ArrayList;
 
 public class Server {
-    private ArrayList<User> users;
+    public static UserRepository users;
     private DialogLogic logic;
 
     public Server(){
-        users = new ArrayList<>();
+        users = new UserRepository();
         logic = new DialogLogic();
     }
 
     public User createUser()
     {
         User client = new User(users.size());
-        users.add(client);
+        users.addUser(client);
         return client;
     }
 

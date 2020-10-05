@@ -9,8 +9,21 @@ public class DialogLogic {
                 yield AnswersStorage.helpMessage;
             case "/reg":
                 yield registerUser(user);
+            case "/match":
+                yield match(user);
             case "/showbio":
                 yield showBio(user);
+            default:
+                yield AnswersStorage.defaultMessage;
+        };
+    }
+
+    private String match(User user){
+        return switch (user.getCurrentState()){
+            case START:
+                yield AnswersStorage.matchErrorMessage;
+            case MENU:
+                yield AnswersStorage.getUserInfo(Server.users.getNextUser());
             default:
                 yield AnswersStorage.defaultMessage;
         };
@@ -42,7 +55,7 @@ public class DialogLogic {
         return switch (user.getCurrentState()){
             case START:
                 yield AnswersStorage.showbioErrorMessage;
-            case MENU:;
+            case MENU:
                 yield AnswersStorage.getUserInfo(user);
             default:
                 yield AnswersStorage.defaultMessage;

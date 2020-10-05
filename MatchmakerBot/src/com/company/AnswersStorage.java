@@ -19,6 +19,8 @@ public class AnswersStorage {
     public static String startMessage = String.format("Приветствую странник. Меня зовут %s!\n", botName);
     public static String showbioErrorMessage = "Вы ещё не зарегистрировались. \n" +
             "Я не могу показать вам вашу анкету.";
+    public static String matchErrorMessage = "Вы ещё не зарегистрировались. \n" +
+            "Я не могу показать вам другие анкеты";
     public static String regErrorMessage = "Вы уже зарегистрированы.";
 
     public static String getUserInfo(User user) {

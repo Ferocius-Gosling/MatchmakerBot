@@ -14,7 +14,7 @@ public class DialogLogicTest {
 
     @Test
     public void testHelpResponse(){
-        var string = logic.getResponse(user0,"/help");
+        var string = logic.getResponse(user0, "/help");
         Assert.assertEquals(string, AnswersStorage.helpMessage);
     }
 
@@ -40,6 +40,13 @@ public class DialogLogicTest {
         user.setReg(true);
         var resp = logic.getResponse(user, "Мне двадцать лет");
         Assert.assertEquals(resp, AnswersStorage.wrongAgeMessage);
+    }
+
+    @Test
+    public void testShowbioIncorrect(){
+        var user = new User(1);
+        var show = logic.getResponse(user, "/showbio");
+        Assert.assertEquals(show, AnswersStorage.showbioErrorMessage);
     }
 
     @Test
