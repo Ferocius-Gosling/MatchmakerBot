@@ -38,7 +38,7 @@ public class Server extends TelegramLongPollingBot {
         var messageToSend = "";
         /////////////////////////////////////////////////
         if (messageFromUser.equals("/start"))
-            messageFromUser = getStartMessage();
+            messageToSend = getStartMessage();
         // ВЫНЕСТИ В ЛОГИКУ ДИАЛОГА
         ///////////////////////////////////////////////
         else
