@@ -1,6 +1,6 @@
 package com.company;
 
-public enum States {
+public enum DialogStates {
     START,
     REG_NAME,
     REG_AGE,
