@@ -35,14 +35,7 @@ public class Server extends TelegramLongPollingBot {
         if (!users.getIds().contains(userId))
             createUser(update.getMessage().getChatId());
         var user = users.getUser(userId);
-        var messageToSend = "";
-        /////////////////////////////////////////////////
-        if (messageFromUser.equals("/start"))
-            messageToSend = getStartMessage();
-        // ВЫНЕСТИ В ЛОГИКУ ДИАЛОГА
-        ///////////////////////////////////////////////
-        else
-            messageToSend = replyToUser(user, messageFromUser);
+        var messageToSend = replyToUser(user, messageFromUser);
         sendMsg(userId.toString(), messageToSend);
     }
 

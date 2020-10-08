@@ -13,6 +13,8 @@ public class DialogLogic {
                 yield match(user);
             case "/showbio":
                 yield showBio(user);
+            case "/start":
+                yield AnswersStorage.startMessage + AnswersStorage.helpMessage;
             default:
                 yield AnswersStorage.defaultMessage;
         };
@@ -86,5 +88,6 @@ public class DialogLogic {
             default:
                 yield AnswersStorage.defaultMessage;
         };
+
     }
 }
