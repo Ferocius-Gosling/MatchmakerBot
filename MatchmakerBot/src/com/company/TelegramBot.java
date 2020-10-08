@@ -5,37 +5,22 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-public class Server extends TelegramLongPollingBot {
-    public static UserRepository users;
-    private DialogLogic logic;
+public class TelegramBot extends TelegramLongPollingBot {
+    private Bot bot;
 
-    public Server() {
-        users = new UserRepository();
-        logic = new DialogLogic();
-    }
-
-    public User createUser(long id) {
-        User client = new User(id);
-        users.addUser(client);
-        return client;
-    }
-
-    public String getStartMessage() {
-        return AnswersStorage.startMessage + AnswersStorage.helpMessage;
-    }
-
-    public String replyToUser(User user, String messageFromUser) {
-        return logic.getResponse(user, messageFromUser);
+    public TelegramBot(Bot bot)
+    {
+        this.bot = bot;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         String messageFromUser = update.getMessage().getText();
         var userId = update.getMessage().getChatId();
-        if (!users.getIds().contains(userId))
-            createUser(update.getMessage().getChatId());
-        var user = users.getUser(userId);
-        var messageToSend = replyToUser(user, messageFromUser);
+        if (!Bot.users.getIds().contains(userId))
+            bot.createUser(update.getMessage().getChatId());
+        var user = Bot.users.getUser(userId);
+        var messageToSend = bot.replyToUser(user, messageFromUser);
         sendMsg(userId.toString(), messageToSend);
     }
 

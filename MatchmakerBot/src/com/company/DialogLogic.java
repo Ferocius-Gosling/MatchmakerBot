@@ -25,7 +25,7 @@ public class DialogLogic {
             case START:
                 yield AnswersStorage.matchErrorMessage;
             case MENU:
-                yield AnswersStorage.getUserInfo(Server.users.getNextUser());
+                yield AnswersStorage.getUserInfo(Bot.users.getNextUser());
             default:
                 yield AnswersStorage.defaultMessage;
         };
