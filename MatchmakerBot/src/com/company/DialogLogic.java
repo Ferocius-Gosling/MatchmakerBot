@@ -4,7 +4,7 @@ public class DialogLogic {
     public String getResponse(User user, String mes) {
         if (user.isReg())
             return registerUser(user, mes);
-        return switch(mes) {
+        return switch (mes) {
             case "/help":
                 yield AnswersStorage.helpMessage;
             case "/reg":
@@ -13,24 +13,26 @@ public class DialogLogic {
                 yield match(user);
             case "/showbio":
                 yield showBio(user);
+            case "/start":
+                yield AnswersStorage.startMessage + AnswersStorage.helpMessage;
             default:
                 yield AnswersStorage.defaultMessage;
         };
     }
 
-    private String match(User user){
-        return switch (user.getCurrentState()){
+    private String match(User user) {
+        return switch (user.getCurrentState()) {
             case START:
                 yield AnswersStorage.matchErrorMessage;
             case MENU:
-                yield AnswersStorage.getUserInfo(Server.users.getNextUser());
+                yield AnswersStorage.getUserInfo(Bot.users.getNextUser());
             default:
                 yield AnswersStorage.defaultMessage;
         };
     }
 
     private String registerUser(User user, String mes) {
-        return switch (user.getCurrentState()){
+        return switch (user.getCurrentState()) {
             case REG_NAME:
                 user.setName(mes);
                 user.changeCurrentState(DialogStates.REG_AGE);
@@ -51,8 +53,8 @@ public class DialogLogic {
         };
     }
 
-    private String showBio(User user){
-        return switch (user.getCurrentState()){
+    private String showBio(User user) {
+        return switch (user.getCurrentState()) {
             case START:
                 yield AnswersStorage.showbioErrorMessage;
             case MENU:
@@ -66,17 +68,19 @@ public class DialogLogic {
         var iAge = 0;
         try {
             iAge = Integer.parseInt(sAge);
-        } catch (NumberFormatException nfe)
-        {
+        } catch (NumberFormatException nfe) {
             return AnswersStorage.wrongAgeMessage;
-        };
+        }
+        ;
+        if ((iAge < 0) || (iAge > 150))
+            return AnswersStorage.wrongAgeMessage;
         user.setAge(iAge);
         user.changeCurrentState(DialogStates.REG_CITY);
         return AnswersStorage.regCityMessage;
     }
 
     private String registerUser(User user) {
-        return switch (user.getCurrentState()){
+        return switch (user.getCurrentState()) {
             case START:
                 user.changeCurrentState(DialogStates.REG_NAME);
                 user.setReg(true);
@@ -86,5 +90,6 @@ public class DialogLogic {
             default:
                 yield AnswersStorage.defaultMessage;
         };
+
     }
 }

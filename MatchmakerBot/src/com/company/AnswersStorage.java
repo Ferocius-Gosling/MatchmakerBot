@@ -10,8 +10,8 @@ public class AnswersStorage {
             " Вызовите /help для справки.";
     private final static String botName = "MatchmakerBot - Вячесlove";
     public static String registerNameMessage = "Регистрация: Напишите своё имя.";
-    public static String regAgeMessage = "Напишите свой возраст арабскими цифрами.";
-    public static String wrongAgeMessage = "Я же попросил написать возраст арабскими цифрами!\n" +
+    public static String regAgeMessage = "Напишите свой возраст арабскими цифрами, в пределах от 0 до 150 лет.";
+    public static String wrongAgeMessage = "Я же попросил написать возраст арабскими цифрами, в пределах от 0 до 150 лет.!\n" +
             "Перепишите пожалуйста.";
     public static String regCityMessage = "Напишите город в котором вы находитесь.";
     public static String regInfoMessage = "Расскажите о себе одним сообщением.";

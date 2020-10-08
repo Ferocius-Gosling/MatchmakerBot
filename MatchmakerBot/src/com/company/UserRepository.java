@@ -3,27 +3,32 @@ package com.company;
 import java.util.*;
 
 public class UserRepository {
-    private ArrayList<User> userRepository;
+    private HashMap<Long, User> users;
 
     public UserRepository() {
-        userRepository = new ArrayList<>();
+        users = new HashMap<>();
     }
 
-    public int size(){
-        return userRepository.size();
+    public int size() {
+        return users.size();
     }
 
-    public User getUser(int id) {
-        return userRepository.get(id);
+    public User getUser(long id) {
+        return users.get(id);
     }
 
-    public User getNextUser(){
+    public User getNextUser() {
         var random = new Random();
-        var next = random.nextInt(userRepository.size());
-        return userRepository.get(next);
+        var next = random.nextInt(users.size());
+        var ids = getIds();
+        return users.get(ids.get(next));
     }
 
-    public void addUser(User user){
-        userRepository.add(user);
+    public void addUser(User user) {
+        users.put(user.getId(), user);
+    }
+
+    public ArrayList<Long> getIds() {
+        return new ArrayList<Long>(users.keySet());
     }
 }

@@ -1,18 +1,20 @@
 package com.company;
 
-import java.util.Scanner;
+import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 public class Main {
 
     public static void main(String[] args) {
-        Server server = new Server();
-        var user = server.createUser();
-        System.out.println(server.getStartMessage());
-        while (true) {
-            Scanner scanner = new Scanner(System.in);
-            String message = scanner.nextLine();
-            String answer = server.replyToUser(user, message);
-            System.out.println(answer);
+        Bot bot = new Bot();
+        ApiContextInitializer.init();
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
+        try {
+            telegramBotsApi.registerBot(new TelegramBot(bot));
+        } catch (TelegramApiRequestException e) {
+            e.printStackTrace();
         }
+
     }
 }
