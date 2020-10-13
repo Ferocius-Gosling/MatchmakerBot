@@ -4,7 +4,7 @@ public class AnswersStorage {
     public static String helpMessage =
             "Напишите /reg, чтобы зарегистрировать себя в базе.\n" +
                     "Напишите /help, чтобы вывести это сообщение ещё раз.\n" +
-            "Напишите /showbio, чтобы посмотреть свою анкету.\n";
+                    "Напишите /showbio, чтобы посмотреть свою анкету.\n";
 
     public static String defaultMessage = "Не понимаю вашего запроса." +
             " Вызовите /help для справки.";

@@ -4,9 +4,11 @@ import java.util.*;
 
 public class UserRepository {
     private HashMap<Long, User> users;
+    private ArrayList<Long> ids;
 
     public UserRepository() {
         users = new HashMap<>();
+        ids = new ArrayList<>();
     }
 
     public int size() {
@@ -19,16 +21,15 @@ public class UserRepository {
 
     public User getNextUser() {
         var random = new Random();
-        var next = random.nextInt(users.size());
-        var ids = getIds();
+        var next = random.nextInt(size());
         return users.get(ids.get(next));
     }
 
     public void addUser(User user) {
-        users.put(user.getId(), user);
+        var id = user.getId();
+        ids.add(id);
+        users.put(id, user);
     }
 
-    public ArrayList<Long> getIds() {
-        return new ArrayList<Long>(users.keySet());
-    }
+
 }

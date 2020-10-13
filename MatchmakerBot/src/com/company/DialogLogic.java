@@ -2,7 +2,7 @@ package com.company;
 
 public class DialogLogic {
     public String getResponse(User user, String mes) {
-        if (user.isReg())
+        if (!user.isRegistred()) //todo not
             return registerUser(user, mes);
         return switch (mes) {
             case "/help":
@@ -45,7 +45,7 @@ public class DialogLogic {
                 yield AnswersStorage.regInfoMessage;
             case REG_INFO:
                 user.setInfo(mes);
-                user.setReg(false);
+                user.setReg(true);
                 user.changeCurrentState(DialogStates.MENU);
                 yield AnswersStorage.getUserInfo(user);
             default:
@@ -83,7 +83,7 @@ public class DialogLogic {
         return switch (user.getCurrentState()) {
             case START:
                 user.changeCurrentState(DialogStates.REG_NAME);
-                user.setReg(true);
+                user.setReg(false);
                 yield AnswersStorage.registerNameMessage;
             case MENU:
                 yield AnswersStorage.regErrorMessage;

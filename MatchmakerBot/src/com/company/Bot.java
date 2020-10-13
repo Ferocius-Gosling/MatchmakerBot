@@ -1,10 +1,5 @@
 package com.company;
 
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 public class Bot {
     public static UserRepository users;
     private DialogLogic logic;
@@ -14,17 +9,20 @@ public class Bot {
         logic = new DialogLogic();
     }
 
-    public User createUser(long id) {
+    public void createUser(long id) {
         User client = new User(id);
         users.addUser(client);
-        return client;
     }
 
-    public String getStartMessage() {
-        return AnswersStorage.startMessage + AnswersStorage.helpMessage;
+    public String replyToUser(long userId, String messageFromUser){
+        if (users.getUser(userId) == null)
+            createUser(userId);
+        var user = Bot.users.getUser(userId);
+        return generateMessage(user, messageFromUser);
     }
 
-    public String replyToUser(User user, String messageFromUser) {
+    public String generateMessage(User user, String messageFromUser) {
+
         return logic.getResponse(user, messageFromUser);
     }
 }

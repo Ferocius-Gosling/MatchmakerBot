@@ -1,8 +1,8 @@
 package com.company;
 
 public class User {
-    private long id;
-    private boolean isReg;
+    private final long id;
+    private boolean isRegistred = true;
     private DialogStates state;
     private String name;
     private int age;
@@ -31,11 +31,11 @@ public class User {
     }
 
     public void setReg(boolean flag){
-        this.isReg = flag;
+        this.isRegistred = flag;
     }
 
-    public boolean isReg(){
-        return this.isReg;
+    public boolean isRegistred(){
+        return this.isRegistred;
     }
 
     public DialogStates getCurrentState() {
