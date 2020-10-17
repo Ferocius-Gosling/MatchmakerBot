@@ -12,7 +12,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     {
         this.bot = bot;
     }
-
+    
     @Override
     public void onUpdateReceived(Update update) {
         String messageFromUser = update.getMessage().getText();
@@ -34,11 +34,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "Mathmaker_bot";
+        return System.getenv("TelegramBotName");
     }
 
     @Override
     public String getBotToken() {
-        return "";
+        return System.getenv("TelegramBotToken");
     }
 }
