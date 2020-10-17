@@ -23,7 +23,7 @@ public class DialogLogic {
     private String match(User user) {
         return switch (user.getCurrentState()) {
             case START:
-                yield AnswersStorage.matchErrorMessage;
+                yield AnswersStorage.matchErrorMessage + registerUser(user);
             case MENU:
                 yield AnswersStorage.getUserInfo(Bot.users.getNextUser());
             default:
@@ -56,7 +56,7 @@ public class DialogLogic {
     private String showBio(User user) {
         return switch (user.getCurrentState()) {
             case START:
-                yield AnswersStorage.showbioErrorMessage;
+                yield AnswersStorage.showbioErrorMessage + registerUser(user);
             case MENU:
                 yield AnswersStorage.getUserInfo(user);
             default:
