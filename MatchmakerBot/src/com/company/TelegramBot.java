@@ -17,19 +17,19 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         String messageFromUser = update.getMessage().getText();
         var userId = update.getMessage().getChatId();
-        sendMsg(userId.toString(), bot.replyToUser(userId, messageFromUser));
+        try {
+            sendMsg(userId.toString(), bot.replyToUser(userId, messageFromUser));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public synchronized void sendMsg(String chatId, String messageToSend) {
+    public synchronized void sendMsg(String chatId, String messageToSend) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(chatId);
         sendMessage.setText(messageToSend);
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        execute(sendMessage);
     }
 
     @Override
