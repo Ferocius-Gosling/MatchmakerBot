@@ -18,12 +18,11 @@ public class Bot {
         if (users.getUser(userId) == null)
             createUser(userId);
         var user = Bot.users.getUser(userId);
-        return generateMessage(user, messageFromUser.getTextMessage());
+        return generateMessage(user, messageFromUser);
     }
 
-    public Message generateMessage(User user, String messageFromUser) {
-        Message messageToSend = new Message(logic.getResponse(user, messageFromUser));
+    public Message generateMessage(User user, Message messageFromUser) {
+        return logic.getResponse(user, messageFromUser);
 
-        return messageToSend;
     }
 }

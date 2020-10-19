@@ -20,7 +20,7 @@ public class AnswersStorage {
     public static String wrongAgeMessage = "Я же попросил написать возраст арабскими цифрами, в пределах от 0 до 150 лет.!\n" +
             "Перепишите пожалуйста.";
     public static String regCityMessage = "Напишите город в котором вы находитесь.";
-    public static String regInfoMessage = "Расскажите о себе одним сообщением. Можете добавить свое фото.";
+    public static String regInfoMessage = "Расскажите о себе одним сообщением.\nМожете добавить свое фото.";
     public static String startMessage = String.format("Приветствую странник. Меня зовут %s!\n", botName);
     public static String forcedRegMessage = "Сейчас начнётся процесс регистрации. \n\n";
     public static String showbioErrorMessage = "Вы ещё не зарегистрировались. \n" +
