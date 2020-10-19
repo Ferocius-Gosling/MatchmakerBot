@@ -10,6 +10,7 @@ public class User {
     private String name;
     private int age;
     private String city;
+    private String TelegramName;
     private String info;
     private ArrayList<User> matchedUsers;
     private ArrayList<User> whoLikesThatUser;
@@ -66,6 +67,10 @@ public class User {
         this.userPhoto = photo;
     }
 
+    public void setTelegramName(String telegramName) {
+        this.TelegramName = telegramName;
+    }
+
     public boolean isRegistred() {
         return this.isRegistred;
     }
@@ -96,6 +101,10 @@ public class User {
 
     public long getId() {
         return this.id;
+    }
+
+    public String getTelegramName() {
+        return this.getTelegramName();
     }
 
     public void changeCurrentState(DialogStates nextState) {

@@ -25,6 +25,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             String textMessageFromUser = "/help";
             File photoFromUser = null;
             String photoId = null;
+            String userName = update.getMessage().getFrom().getUserName();
             var userId = update.getMessage().getChatId();
             if (update.hasMessage() && update.getMessage().hasText())
                 textMessageFromUser = update.getMessage().getText();
@@ -37,7 +38,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 photoFromUser = this.downloadFile(filePath);
             }
             Message messageFromUser = new Message(photoFromUser, textMessageFromUser);
-            Message messageToUser = bot.replyToUser(userId, messageFromUser);
+            Message messageToUser = bot.replyToUser(userId, messageFromUser, userName);
             if (messageToUser.getPhoto() == null)
                 sendMsg(userId.toString(), messageToUser.getTextMessage());
             else

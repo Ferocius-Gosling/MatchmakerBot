@@ -4,7 +4,7 @@ public class DialogLogic {
     private User userInQuestion;
 
     public Message getResponse(User user, Message messageFromUser) {
-        if (!user.isRegistred()) //todo not
+        if (!user.isRegistred())
             return registerUser(user, messageFromUser);
         return switch (messageFromUser.getTextMessage()) {
             case "/help":
@@ -48,6 +48,8 @@ public class DialogLogic {
                 replyBuilder.append(AnswersStorage.showMatchesMessage);
                 for (User u : user.getMatchedUsers()) {
                     replyBuilder.append(AnswersStorage.getUserInfo(u));
+                    replyBuilder.append("\n");
+                    replyBuilder.append(u.getTelegramName());
                     replyBuilder.append("\n\n");
                 }
                 yield new Message(replyBuilder.toString());
@@ -74,7 +76,7 @@ public class DialogLogic {
             case FIND:
                 user.changeCurrentState(DialogStates.FIND);
                 userInQuestion = Bot.users.getNextUser();
-                yield new Message(AnswersStorage.getUserInfo(userInQuestion));
+                yield showBio(userInQuestion);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };
