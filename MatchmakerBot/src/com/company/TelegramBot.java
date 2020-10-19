@@ -1,23 +1,40 @@
 package com.company;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.awt.desktop.SystemEventListener;
+import java.io.File;
+import java.io.FileInputStream;
 
 public class TelegramBot extends TelegramLongPollingBot {
     private Bot bot;
 
-    public TelegramBot(Bot bot)
-    {
+    public TelegramBot(Bot bot) {
         this.bot = bot;
     }
-    
+
     @Override
     public void onUpdateReceived(Update update) {
-        String messageFromUser = update.getMessage().getText();
-        var userId = update.getMessage().getChatId();
         try {
+            String messageFromUser = "/help";
+            File photoFromUser = null;
+            String photoId = null;
+            var userId = update.getMessage().getChatId();
+            if (update.hasMessage() && update.getMessage().hasText())
+                messageFromUser = update.getMessage().getText();
+            if (update.getMessage().hasPhoto()) {
+                messageFromUser = update.getMessage().getCaption();
+                var photos = update.getMessage().getPhoto();
+                photoId = photos.get(photos.size() - 1).getFileId();
+                GetFile getFile = new GetFile().setFileId(photoId);
+                String filePath = execute(getFile).getFilePath();
+                photoFromUser = this.downloadFile(filePath);
+            }
             sendMsg(userId.toString(), bot.replyToUser(userId, messageFromUser));
         } catch (Exception e) {
             e.printStackTrace();
