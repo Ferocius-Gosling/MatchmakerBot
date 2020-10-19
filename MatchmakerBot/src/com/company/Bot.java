@@ -14,15 +14,16 @@ public class Bot {
         users.addUser(client);
     }
 
-    public String replyToUser(long userId, String messageFromUser){
+    public Message replyToUser(long userId, Message messageFromUser) {
         if (users.getUser(userId) == null)
             createUser(userId);
         var user = Bot.users.getUser(userId);
-        return generateMessage(user, messageFromUser);
+        return generateMessage(user, messageFromUser.getTextMessage());
     }
 
-    public String generateMessage(User user, String messageFromUser) {
+    public Message generateMessage(User user, String messageFromUser) {
+        Message messageToSend = new Message(logic.getResponse(user, messageFromUser));
 
-        return logic.getResponse(user, messageFromUser);
+        return messageToSend;
     }
 }
