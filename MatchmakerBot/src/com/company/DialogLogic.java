@@ -1,6 +1,8 @@
 package com.company;
 
 public class DialogLogic {
+    private User userInQuestion;
+
     public String getResponse(User user, String mes) {
         if (!user.isRegistred()) //todo not
             return registerUser(user, mes);
@@ -9,10 +11,16 @@ public class DialogLogic {
                 yield AnswersStorage.helpMessage;
             case "/reg":
                 yield registerUser(user);
-            case "/match":
-                yield match(user);
+            case "/find":
+                yield find(user);
+            case "/like":
+                yield like(user);
             case "/showbio":
                 yield showBio(user);
+            case "/matches":
+                yield showMatches(user);
+            case "/stop":
+                yield stop(user);
             case "/start":
                 yield AnswersStorage.startMessage + AnswersStorage.helpMessage;
             default:
@@ -20,12 +28,53 @@ public class DialogLogic {
         };
     }
 
-    private String match(User user) {
+    private String stop(User user){
+        return switch (user.getCurrentState()) {
+            case FIND:
+                user.changeCurrentState(DialogStates.MENU);
+                yield AnswersStorage.stopMessage;
+            default:
+                yield AnswersStorage.defaultMessage;
+        };
+    }
+
+    private String showMatches(User user) {
         return switch (user.getCurrentState()) {
             case START:
                 yield AnswersStorage.matchErrorMessage + registerUser(user);
             case MENU:
-                yield AnswersStorage.getUserInfo(Bot.users.getNextUser());
+            case FIND:
+                var replyBuilder = new StringBuilder();
+                replyBuilder.append(AnswersStorage.showMatchesMessage);
+                for (User u: user.getMatchedUsers()){
+                    replyBuilder.append(AnswersStorage.getUserInfo(u));
+                    replyBuilder.append("\n\n");
+                }
+                yield replyBuilder.toString();
+            default:
+                yield AnswersStorage.defaultMessage;
+        };
+    }
+
+    private String like(User user){
+        return switch (user.getCurrentState()) {
+            case FIND:
+                user.addToWhoLikes(userInQuestion);
+                yield AnswersStorage.likeMessage;
+            default:
+                yield AnswersStorage.defaultMessage;
+        };
+    }
+
+    private String find(User user) {
+        return switch (user.getCurrentState()) {
+            case START:
+                yield AnswersStorage.matchErrorMessage + registerUser(user);
+            case MENU:
+            case FIND:
+                user.changeCurrentState(DialogStates.FIND);
+                userInQuestion = Bot.users.getNextUser();
+                yield AnswersStorage.getUserInfo(userInQuestion);
             default:
                 yield AnswersStorage.defaultMessage;
         };
@@ -71,7 +120,6 @@ public class DialogLogic {
         } catch (NumberFormatException nfe) {
             return AnswersStorage.wrongAgeMessage;
         }
-        ;
         if ((iAge < 0) || (iAge > 150))
             return AnswersStorage.wrongAgeMessage;
         user.setAge(iAge);

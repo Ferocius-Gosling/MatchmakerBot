@@ -7,6 +7,7 @@ public enum DialogStates {
     REG_CITY,
     REG_INFO,
     MENU,
+    FIND,
     DIALOG
     //etc
 }
