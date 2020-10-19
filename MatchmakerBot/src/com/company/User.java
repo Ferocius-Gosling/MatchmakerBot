@@ -1,5 +1,7 @@
 package com.company;
 
+import java.util.ArrayList;
+
 public class User {
     private final long id;
     private boolean isRegistred = true;
@@ -8,10 +10,34 @@ public class User {
     private int age;
     private String city;
     private String info;
+    private ArrayList<User> matchedUsers;
+    private ArrayList<User> whoLikesThatUser;
 
     public User(long id) {
+        whoLikesThatUser = new ArrayList<User>();
+        matchedUsers = new ArrayList<User>();
         this.id = id;
         this.state = DialogStates.START;
+    }
+
+    public void addToWhoLikes(User user){
+        whoLikesThatUser.add(user);
+        if (user.containsWhoLikesUser(this)) {
+            addToMatchedUsers(user);
+            user.addToMatchedUsers(this);
+        }
+    }
+
+    public void addToMatchedUsers(User user){
+        matchedUsers.add(user);
+    }
+
+    public ArrayList<User> getMatchedUsers(){
+        return matchedUsers;
+    }
+
+    public boolean containsWhoLikesUser(User user){
+        return whoLikesThatUser.contains(user);
     }
 
     public void setName(String name){
