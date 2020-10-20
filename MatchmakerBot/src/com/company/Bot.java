@@ -14,10 +14,11 @@ public class Bot {
         users.addUser(client);
     }
 
-    public Message replyToUser(long userId, Message messageFromUser) {
+    public Message replyToUser(long userId, String userName, Message messageFromUser) {
         if (users.getUser(userId) == null)
             createUser(userId);
         var user = Bot.users.getUser(userId);
+        user.setUserName(userName);
         return generateMessage(user, messageFromUser);
     }
 

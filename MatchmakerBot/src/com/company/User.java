@@ -9,6 +9,7 @@ public class User {
     private DialogStates state;
     private String name;
     private int age;
+    private String userName;
     private String city;
     private String info;
     private ArrayList<User> matchedUsers;
@@ -48,6 +49,10 @@ public class User {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public void setCity(String city) {
@@ -90,6 +95,10 @@ public class User {
         return this.info;
     }
 
+    public String getUserName() {
+        return this.userName;
+    }
+
     public File getUserPhoto() {
         return this.userPhoto;
     }
@@ -103,5 +112,3 @@ public class User {
         this.state = nextState;
     }
 }
-
-
