@@ -51,6 +51,7 @@ public class DialogLogic {
                     replyBuilder.append(u.getUserName());
                     replyBuilder.append("\n\n");
                 }
+                user.clearMatched();
                 yield new Message(replyBuilder.toString());
             default:
                 yield new Message(AnswersStorage.defaultMessage);
@@ -74,7 +75,8 @@ public class DialogLogic {
             case MENU:
             case FIND:
                 user.changeCurrentState(DialogStates.FIND);
-                var userInQuestion = Bot.users.getNextUser();
+                var userInQuestion = Bot.users.getNextUser(user);
+                if (userInQuestion == null) yield new Message(AnswersStorage.nobodyElseMessage);
                 user.setUserInQuestion(userInQuestion);
                 yield new Message(userInQuestion.getUserPhoto(), (AnswersStorage.getUserInfo(userInQuestion)
                 + AnswersStorage.forwardMessage));
@@ -100,7 +102,8 @@ public class DialogLogic {
                 user.setUserPhoto(message.getPhoto());
                 user.setReg(true);
                 user.changeCurrentState(DialogStates.MENU);
-                yield new Message(user.getUserPhoto(), AnswersStorage.getUserInfo(user));
+                yield new Message(user.getUserPhoto(),
+                        AnswersStorage.getUserInfo(user) + AnswersStorage.startFindingMessage);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };
@@ -111,7 +114,8 @@ public class DialogLogic {
             case START:
                 yield new Message(AnswersStorage.showbioErrorMessage + registerUser(user).getTextMessage());
             case MENU:
-                yield new Message(user.getUserPhoto(), AnswersStorage.getUserInfo(user));
+                yield new Message(user.getUserPhoto(),
+                        AnswersStorage.getUserInfo(user) + AnswersStorage.forwardMessage);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };

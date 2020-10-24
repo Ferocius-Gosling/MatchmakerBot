@@ -28,8 +28,8 @@ public class User {
         userInQuestion = user;
     }
 
-    public User getUserInQuestion(){
-        return userInQuestion;
+    public void clearMatched(){
+        matchedUsers = new ArrayList<>();
     }
 
     public void addToWhoLikes() {
