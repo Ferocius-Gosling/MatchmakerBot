@@ -12,6 +12,7 @@ public class User {
     private String userName;
     private String city;
     private String info;
+    private User userInQuestion;
     private ArrayList<User> matchedUsers;
     private ArrayList<User> whoLikesThatUser;
     private File userPhoto;
@@ -23,11 +24,21 @@ public class User {
         this.state = DialogStates.START;
     }
 
-    public void addToWhoLikes(User user) {
-        whoLikesThatUser.add(user);
-        if (user.containsWhoLikesUser(this)) {
-            addToMatchedUsers(user);
-            user.addToMatchedUsers(this);
+    public void setUserInQuestion(User user){
+        userInQuestion = user;
+    }
+
+    public User getUserInQuestion(){
+        return userInQuestion;
+    }
+
+    public void addToWhoLikes() {
+        if (!containsWhoLikesUser(userInQuestion)){
+            whoLikesThatUser.add(userInQuestion);
+            if (userInQuestion.containsWhoLikesUser(this)) {
+                addToMatchedUsers(userInQuestion);
+                userInQuestion.addToMatchedUsers(this);
+            }
         }
     }
 

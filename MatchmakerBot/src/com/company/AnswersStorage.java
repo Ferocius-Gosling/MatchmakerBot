@@ -30,8 +30,9 @@ public class AnswersStorage {
     public static String regErrorMessage = "Вы уже зарегистрированы.";
     public static String noUsernameError = "Для работы бота вам необходимо задать username в настройках Telegram";
     public static String showMatchesMessage = "Вот ваши совпадения: \n \n";
-    public static String likeMessage = "Ждите ответа от вашей второй половинки.";
+    public static String likeMessage = "Ждите ответа от вашей второй половинки.\n Чтобы посмотреть свои совпадения напишите /matches.";
     public static String stopMessage = "Хватит пока искать свою половинку.";
+    public static String forwardMessage = "\n Поставить лайк: /like \n Скипнуть: /find \n";
 
     public static String getUserInfo(User user) {
         return String.format("Имя: %s\nВозраст: %d\nГород: %s\n++++Описание++++\n%s",

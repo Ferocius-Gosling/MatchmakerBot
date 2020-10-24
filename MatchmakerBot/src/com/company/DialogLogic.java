@@ -1,8 +1,6 @@
 package com.company;
 
 public class DialogLogic {
-    private User userInQuestion;
-
     public Message getResponse(User user, Message messageFromUser) {
         if (!user.isRegistred()) //todo not
             return registerUser(user, messageFromUser);
@@ -62,7 +60,7 @@ public class DialogLogic {
     private Message like(User user) {
         return switch (user.getCurrentState()) {
             case FIND:
-                user.addToWhoLikes(userInQuestion);
+                user.addToWhoLikes();
                 yield new Message(AnswersStorage.likeMessage);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
@@ -76,8 +74,10 @@ public class DialogLogic {
             case MENU:
             case FIND:
                 user.changeCurrentState(DialogStates.FIND);
-                userInQuestion = Bot.users.getNextUser();
-                yield new Message(userInQuestion.getUserPhoto(), AnswersStorage.getUserInfo(userInQuestion));
+                var userInQuestion = Bot.users.getNextUser();
+                user.setUserInQuestion(userInQuestion);
+                yield new Message(userInQuestion.getUserPhoto(), (AnswersStorage.getUserInfo(userInQuestion)
+                + AnswersStorage.forwardMessage));
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };
