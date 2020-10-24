@@ -9,8 +9,8 @@ public class User {
     private DialogStates state;
     private String name;
     private int age;
+    private String userName;
     private String city;
-    private String TelegramName;
     private String info;
     private ArrayList<User> matchedUsers;
     private ArrayList<User> whoLikesThatUser;
@@ -51,6 +51,10 @@ public class User {
         this.age = age;
     }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public void setCity(String city) {
         this.city = city;
     }
@@ -65,10 +69,6 @@ public class User {
 
     public void setUserPhoto(File photo) {
         this.userPhoto = photo;
-    }
-
-    public void setTelegramName(String telegramName) {
-        this.TelegramName = telegramName;
     }
 
     public boolean isRegistred() {
@@ -95,6 +95,10 @@ public class User {
         return this.info;
     }
 
+    public String getUserName() {
+        return this.userName;
+    }
+
     public File getUserPhoto() {
         return this.userPhoto;
     }
@@ -103,14 +107,8 @@ public class User {
         return this.id;
     }
 
-    public String getTelegramName() {
-        return this.getTelegramName();
-    }
-
     public void changeCurrentState(DialogStates nextState) {
         //mb validation
         this.state = nextState;
     }
 }
-
-

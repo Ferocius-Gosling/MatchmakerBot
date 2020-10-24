@@ -4,7 +4,7 @@ public class DialogLogic {
     private User userInQuestion;
 
     public Message getResponse(User user, Message messageFromUser) {
-        if (!user.isRegistred())
+        if (!user.isRegistred()) //todo not
             return registerUser(user, messageFromUser);
         return switch (messageFromUser.getTextMessage()) {
             case "/help":
@@ -41,15 +41,16 @@ public class DialogLogic {
     private Message showMatches(User user) {
         return switch (user.getCurrentState()) {
             case START:
-                yield new Message(AnswersStorage.matchErrorMessage + registerUser(user));
+                yield new Message(AnswersStorage.matchErrorMessage + registerUser(user).getTextMessage());
             case MENU:
             case FIND:
                 var replyBuilder = new StringBuilder();
                 replyBuilder.append(AnswersStorage.showMatchesMessage);
                 for (User u : user.getMatchedUsers()) {
                     replyBuilder.append(AnswersStorage.getUserInfo(u));
-                    replyBuilder.append("\n");
-                    replyBuilder.append(u.getTelegramName());
+                    replyBuilder.append("\n\n");
+                    replyBuilder.append("@");
+                    replyBuilder.append(u.getUserName());
                     replyBuilder.append("\n\n");
                 }
                 yield new Message(replyBuilder.toString());
@@ -71,12 +72,12 @@ public class DialogLogic {
     private Message find(User user) {
         return switch (user.getCurrentState()) {
             case START:
-                yield new Message(AnswersStorage.matchErrorMessage + registerUser(user));
+                yield new Message(AnswersStorage.matchErrorMessage + registerUser(user).getTextMessage());
             case MENU:
             case FIND:
                 user.changeCurrentState(DialogStates.FIND);
                 userInQuestion = Bot.users.getNextUser();
-                yield showBio(userInQuestion);
+                yield new Message(userInQuestion.getUserPhoto(), AnswersStorage.getUserInfo(userInQuestion));
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };
@@ -108,7 +109,7 @@ public class DialogLogic {
     private Message showBio(User user) {
         return switch (user.getCurrentState()) {
             case START:
-                yield new Message(AnswersStorage.showbioErrorMessage + registerUser(user));
+                yield new Message(AnswersStorage.showbioErrorMessage + registerUser(user).getTextMessage());
             case MENU:
                 yield new Message(user.getUserPhoto(), AnswersStorage.getUserInfo(user));
             default:

@@ -14,15 +14,11 @@ public class Bot {
         users.addUser(client);
     }
 
-    public Message replyToUser(long userId, Message messageFromUser, String userName) {
+    public Message replyToUser(long userId, String userName, Message messageFromUser) {
         if (users.getUser(userId) == null)
             createUser(userId);
-
         var user = Bot.users.getUser(userId);
-        if (userName != null)
-            user.setTelegramName("@" + userName);
-        else
-            user.setTelegramName("Для корректной работы требуется username");
+        user.setUserName(userName);
         return generateMessage(user, messageFromUser);
     }
 

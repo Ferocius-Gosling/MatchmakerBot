@@ -1,5 +1,6 @@
 package com.company;
 
+import org.glassfish.jersey.message.filtering.SelectableScopeResolver;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -25,8 +26,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             String textMessageFromUser = "/help";
             File photoFromUser = null;
             String photoId = null;
-            String userName = update.getMessage().getFrom().getUserName();
             var userId = update.getMessage().getChatId();
+            var userName = update.getMessage().getFrom().getUserName();
             if (update.hasMessage() && update.getMessage().hasText())
                 textMessageFromUser = update.getMessage().getText();
             if (update.getMessage().hasPhoto() && update.getMessage().getCaption() != null) {
@@ -38,11 +39,17 @@ public class TelegramBot extends TelegramLongPollingBot {
                 photoFromUser = this.downloadFile(filePath);
             }
             Message messageFromUser = new Message(photoFromUser, textMessageFromUser);
-            Message messageToUser = bot.replyToUser(userId, messageFromUser, userName);
-            if (messageToUser.getPhoto() == null)
-                sendMsg(userId.toString(), messageToUser.getTextMessage());
+            Message messageToUser;
+            if (userName != null)
+                messageToUser = bot.replyToUser(userId, userName, messageFromUser);
             else
-                sendPhoto(userId.toString(), messageToUser.getTextMessage(), messageToUser.getPhoto());
+                messageToUser = new Message(AnswersStorage.noUsernameError);
+            if (messageToUser.getPhoto() == null)
+                sendMsg(userId.toString(), messageToUser.getTextMessage()
+                        .replace("_", "\\_"));
+            else
+                sendPhoto(userId.toString(), messageToUser.getTextMessage()
+                        .replace("_", "\\_"), messageToUser.getPhoto());
         } catch (Exception e) {
             e.printStackTrace();
         }
