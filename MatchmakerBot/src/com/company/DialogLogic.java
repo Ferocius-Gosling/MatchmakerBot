@@ -1,8 +1,6 @@
 package com.company;
 
 public class DialogLogic {
-    private User userInQuestion;
-
     public Message getResponse(User user, Message messageFromUser) {
         if (!user.isRegistred()) //todo not
             return registerUser(user, messageFromUser);
@@ -53,6 +51,7 @@ public class DialogLogic {
                     replyBuilder.append(u.getUserName());
                     replyBuilder.append("\n\n");
                 }
+                user.clearMatched();
                 yield new Message(replyBuilder.toString());
             default:
                 yield new Message(AnswersStorage.defaultMessage);
@@ -62,7 +61,7 @@ public class DialogLogic {
     private Message like(User user) {
         return switch (user.getCurrentState()) {
             case FIND:
-                user.addToWhoLikes(userInQuestion);
+                user.addToWhoLikes();
                 yield new Message(AnswersStorage.likeMessage);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
@@ -76,8 +75,11 @@ public class DialogLogic {
             case MENU:
             case FIND:
                 user.changeCurrentState(DialogStates.FIND);
-                userInQuestion = Bot.users.getNextUser();
-                yield new Message(userInQuestion.getUserPhoto(), AnswersStorage.getUserInfo(userInQuestion));
+                var userInQuestion = Bot.users.getNextUser(user);
+                if (userInQuestion == null) yield new Message(AnswersStorage.nobodyElseMessage);
+                user.setUserInQuestion(userInQuestion);
+                yield new Message(userInQuestion.getUserPhoto(), (AnswersStorage.getUserInfo(userInQuestion)
+                + AnswersStorage.forwardMessage));
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };
@@ -100,7 +102,8 @@ public class DialogLogic {
                 user.setUserPhoto(message.getPhoto());
                 user.setReg(true);
                 user.changeCurrentState(DialogStates.MENU);
-                yield new Message(user.getUserPhoto(), AnswersStorage.getUserInfo(user));
+                yield new Message(user.getUserPhoto(),
+                        AnswersStorage.getUserInfo(user) + AnswersStorage.startFindingMessage);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };
@@ -111,7 +114,8 @@ public class DialogLogic {
             case START:
                 yield new Message(AnswersStorage.showbioErrorMessage + registerUser(user).getTextMessage());
             case MENU:
-                yield new Message(user.getUserPhoto(), AnswersStorage.getUserInfo(user));
+                yield new Message(user.getUserPhoto(),
+                        AnswersStorage.getUserInfo(user) + AnswersStorage.forwardMessage);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };
