@@ -23,7 +23,7 @@ public class Bot {
     }
 
     public Message generateMessage(User user, Message messageFromUser) {
-        return logic.getResponse(user, messageFromUser);
+        return new Message(logic.getResponse(user, messageFromUser), user.getCurrentState());
 
     }
 }
