@@ -24,9 +24,12 @@ public class UserRepository {
         var next = random.nextInt(size());
         var userToGet = users.get(ids.get(next));
         if (size() == 1) return null;
-        while (user.getId() == userToGet.getId()){
+        var i = 0;
+        while (user.getId() == userToGet.getId() || !userToGet.isRegEnded()){
             next = random.nextInt(size());
             userToGet = users.get(ids.get(next));
+            i++;
+            if (i > 10) return null;
         }
         return users.get(ids.get(next));
     }

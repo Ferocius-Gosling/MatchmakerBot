@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class User {
     private final long id;
     private boolean isRegistred = true;
+    private boolean isRegEnded = false;
     private DialogStates state;
     private String name;
     private int age;
@@ -76,11 +77,14 @@ public class User {
 
     public void setReg(boolean flag) {
         this.isRegistred = flag;
+        this.isRegEnded = flag;
     }
 
     public void setUserPhoto(File photo) {
         this.userPhoto = photo;
     }
+
+    public boolean isRegEnded() { return this.isRegEnded; }
 
     public boolean isRegistred() {
         return this.isRegistred;

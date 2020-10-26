@@ -137,12 +137,12 @@ public class DialogLogic {
 
     private Message registerUser(User user) {
         return switch (user.getCurrentState()) {
+            case MENU:
+            case FIND:
             case START:
                 user.changeCurrentState(DialogStates.REG_NAME);
                 user.setReg(false);
                 yield new Message(AnswersStorage.registerNameMessage);
-            case MENU:
-                yield new Message(AnswersStorage.regErrorMessage);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };
