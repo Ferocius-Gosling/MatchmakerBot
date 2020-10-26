@@ -61,11 +61,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                 messageToUser = new Message(AnswersStorage.noUsernameError);
 
             boolean isFinding = false;
-            if ((messageFromUser.getTextMessage().equals("/find") ||
-                    messageFromUser.getTextMessage().equals("/like") &&
-                            messageToUser.getState() == DialogStates.FIND))
+            if (messageFromUser.getTextMessage().equals("/find") &&
+                    messageToUser.getState() == DialogStates.FIND)
                 isFinding = true;
-            
+
             if (messageToUser.getPhoto() == null)
                 sendMsg(userId.toString(), messageToUser.getTextMessage()
                         .replace("_", "\\_"), isFinding);
@@ -84,7 +83,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.setText(messageToSend);
         if (isFinding)
             sendMessage.setReplyMarkup(createInlineKeyboardMarkup());
-        //setKeyboard(sendMessage);
         execute(sendMessage);
     }
 
@@ -97,7 +95,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             sendPhoto.setCaption(messageToSend);
             if (isFinding)
                 sendPhoto.setReplyMarkup(createInlineKeyboardMarkup());
-//            setButtons(sendPhoto);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -105,24 +102,24 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
 
-    public synchronized void setKeyboard(SendMessage sendMessage) {
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        replyKeyboardMarkup.setSelective(true);
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboard(false);
-        List<KeyboardRow> keyboard = new ArrayList<>();
-        KeyboardRow keyboardFirstRow = new KeyboardRow();
-        KeyboardRow keyboardSecondRow = new KeyboardRow();
-        var b = new KeyboardButton();
-        keyboardFirstRow.add(new KeyboardButton("/help"));
-        keyboardFirstRow.add(new KeyboardButton("/reg"));
-        keyboardSecondRow.add(new KeyboardButton("/showbio"));
-        keyboardSecondRow.add(new KeyboardButton("/matches"));
-        keyboard.add(keyboardFirstRow);
-        keyboard.add(keyboardSecondRow);
-        replyKeyboardMarkup.setKeyboard(keyboard);
-    }
+//    public synchronized void setKeyboard(SendMessage sendMessage) {
+//        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+//        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+//        replyKeyboardMarkup.setSelective(true);
+//        replyKeyboardMarkup.setResizeKeyboard(true);
+//        replyKeyboardMarkup.setOneTimeKeyboard(false);
+//        List<KeyboardRow> keyboard = new ArrayList<>();
+//        KeyboardRow keyboardFirstRow = new KeyboardRow();
+//        KeyboardRow keyboardSecondRow = new KeyboardRow();
+//        var b = new KeyboardButton();
+//        keyboardFirstRow.add(new KeyboardButton("/help"));
+//        keyboardFirstRow.add(new KeyboardButton("/reg"));
+//        keyboardSecondRow.add(new KeyboardButton("/showbio"));
+//        keyboardSecondRow.add(new KeyboardButton("/matches"));
+//        keyboard.add(keyboardFirstRow);
+//        keyboard.add(keyboardSecondRow);
+//        replyKeyboardMarkup.setKeyboard(keyboard);
+//    }
 
     public synchronized InlineKeyboardMarkup createInlineKeyboardMarkup() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
