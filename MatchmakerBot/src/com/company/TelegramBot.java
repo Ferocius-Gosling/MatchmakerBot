@@ -25,7 +25,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         try {
-            String textMessageFromUser = "/help";
+            String textMessageFromUser = "";
             File photoFromUser = null;
             String photoId = null;
             Long userId = 0L;
@@ -39,15 +39,20 @@ public class TelegramBot extends TelegramLongPollingBot {
                 userId = update.getMessage().getChatId();
                 userName = update.getMessage().getFrom().getUserName();
                 textMessageFromUser = update.getMessage().getText();
-            } else if (update.getMessage().hasPhoto() && update.getMessage().getCaption() != null) {
+            } else if (update.getMessage().hasPhoto()) {
                 userId = update.getMessage().getChatId();
                 userName = update.getMessage().getFrom().getUserName();
-                textMessageFromUser = update.getMessage().getCaption();
+                if (update.getMessage().getCaption() != null)
+                    textMessageFromUser = update.getMessage().getCaption();
                 var photos = update.getMessage().getPhoto();
                 photoId = photos.get(photos.size() - 1).getFileId();
                 GetFile getFile = new GetFile().setFileId(photoId);
                 String filePath = execute(getFile).getFilePath();
                 photoFromUser = this.downloadFile(filePath);
+            } else {
+                userId = update.getMessage().getChatId();
+                userName = update.getMessage().getFrom().getUserName();
+                textMessageFromUser = "qwerty";
             }
 
             Message messageFromUser = new Message(photoFromUser, textMessageFromUser);
