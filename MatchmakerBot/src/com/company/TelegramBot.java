@@ -33,7 +33,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             if (update.hasCallbackQuery()) {
                 userId = update.getCallbackQuery().getMessage().getChatId();
-                userName = update.getCallbackQuery().getMessage().getFrom().getUserName();
+                userName = update.getCallbackQuery().getFrom().getUserName();
                 textMessageFromUser = update.getCallbackQuery().getData();
             } else if (update.hasMessage() && update.getMessage().hasText()) {
                 userId = update.getMessage().getChatId();
