@@ -1,8 +1,8 @@
 package test;
 
 
-import com.company.DialogLogic;
-import com.company.User;
+import com.company.bot.DialogLogic;
+import com.company.bot.User;
 
 public class DialogLogicTest {
     public DialogLogic logic = new DialogLogic();

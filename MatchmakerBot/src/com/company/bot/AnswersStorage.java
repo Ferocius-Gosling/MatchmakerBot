@@ -1,4 +1,4 @@
-package com.company;
+package com.company.bot;
 
 public class AnswersStorage {
     public static String helpMessage = """

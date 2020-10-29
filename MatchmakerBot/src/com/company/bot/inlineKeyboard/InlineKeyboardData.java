@@ -1,4 +1,6 @@
-package com.company;
+package com.company.bot.inlineKeyboard;
+
+import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 
 import java.util.ArrayList;
 

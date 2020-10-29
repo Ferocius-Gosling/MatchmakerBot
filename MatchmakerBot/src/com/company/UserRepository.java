@@ -1,5 +1,7 @@
 package com.company;
 
+import com.company.bot.User;
+
 import java.util.*;
 
 public class UserRepository {

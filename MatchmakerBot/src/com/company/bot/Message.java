@@ -1,4 +1,6 @@
-package com.company;
+package com.company.bot;
+
+import com.company.bot.inlineKeyboard.InlineKeyboardData;
 
 import java.io.File;
 

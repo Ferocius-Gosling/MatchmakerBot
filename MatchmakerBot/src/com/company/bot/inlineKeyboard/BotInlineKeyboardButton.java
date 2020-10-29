@@ -1,4 +1,4 @@
-package com.company;
+package com.company.bot.inlineKeyboard;
 
 public class BotInlineKeyboardButton {
     private String text;

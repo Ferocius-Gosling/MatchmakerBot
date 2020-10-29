@@ -1,4 +1,4 @@
-package com.company;
+package com.company.bot;
 
 public class DialogLogic {
     public Message getResponse(User user, Message messageFromUser) {

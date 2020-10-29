@@ -1,5 +1,8 @@
 package com.company;
 
+import com.company.bot.*;
+import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
+import com.company.bot.inlineKeyboard.InlineKeyboardData;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
