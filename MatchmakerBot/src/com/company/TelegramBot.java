@@ -6,10 +6,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
@@ -60,41 +57,40 @@ public class TelegramBot extends TelegramLongPollingBot {
             else
                 messageToUser = new Message(AnswersStorage.noUsernameError);
 
-            boolean isFinding = false;
-            if (messageFromUser.getTextMessage().equals("/find") &&
-                    messageToUser.getState() == DialogStates.FIND)
-                isFinding = true;
-
             if (messageToUser.getPhoto() == null)
                 sendMsg(userId.toString(), messageToUser.getTextMessage()
-                        .replace("_", "\\_"), isFinding);
+                        .replace("_", "\\_"), messageToUser.getInlineKeyboardData());
             else
                 sendPhoto(userId.toString(), messageToUser.getTextMessage()
-                        .replace("_", "\\_"), messageToUser.getPhoto(), isFinding);
+                        .replace("_", "\\_"), messageToUser.getPhoto(), messageToUser.getInlineKeyboardData());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public synchronized void sendMsg(String chatId, String messageToSend, boolean isFinding) throws TelegramApiException {
+    public synchronized void sendMsg(String chatId, String messageToSend, InlineKeyboardData inlineKeyboardData) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(chatId);
         sendMessage.setText(messageToSend);
-        if (isFinding)
-            sendMessage.setReplyMarkup(createInlineKeyboardMarkup());
+        if (inlineKeyboardData != null) {
+            var inlineKeyboardMarkup = createInlineKeyboardMarkup(inlineKeyboardData);
+            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        }
         execute(sendMessage);
     }
 
-    public synchronized void sendPhoto(String chatId, String messageToSend, File photoToSend, Boolean isFinding) throws TelegramApiException {
+    public synchronized void sendPhoto(String chatId, String messageToSend, File photoToSend, InlineKeyboardData inlineKeyboardData) throws TelegramApiException {
         SendPhoto sendPhoto = null;
         try {
             sendPhoto = new SendPhoto();
             sendPhoto.setChatId(chatId);
             sendPhoto.setPhoto("photo-name", new FileInputStream(photoToSend));
             sendPhoto.setCaption(messageToSend);
-            if (isFinding)
-                sendPhoto.setReplyMarkup(createInlineKeyboardMarkup());
+            if (inlineKeyboardData != null) {
+                var inlineKeyboardMarkup = createInlineKeyboardMarkup(inlineKeyboardData);
+                sendPhoto.setReplyMarkup(inlineKeyboardMarkup);
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -121,25 +117,24 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        replyKeyboardMarkup.setKeyboard(keyboard);
 //    }
 
-    public synchronized InlineKeyboardMarkup createInlineKeyboardMarkup() {
+    public synchronized InlineKeyboardMarkup createInlineKeyboardMarkup(InlineKeyboardData inlineKeyboardData) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-
-        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-
-        inlineKeyboardButton1.setText("find\uD83D\uDC94");
-        inlineKeyboardButton1.setCallbackData("/find");
-        inlineKeyboardButton2.setText("like❤");
-        inlineKeyboardButton2.setCallbackData("/like");
-
-        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-        keyboardButtonsRow1.add(inlineKeyboardButton1);
-        keyboardButtonsRow1.add(inlineKeyboardButton2);
-
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        rowList.add(keyboardButtonsRow1);
-        inlineKeyboardMarkup.setKeyboard(rowList);
 
+        for (int i = 0; i < inlineKeyboardData.getRows().size(); i++) {
+            List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+
+            for (BotInlineKeyboardButton button : inlineKeyboardData.getRows().get(i)
+            ) {
+                var inlineKeyboardButton = new InlineKeyboardButton();
+                inlineKeyboardButton.setText(button.getText());
+                inlineKeyboardButton.setCallbackData(button.getCallbackData());
+                keyboardButtonsRow.add(inlineKeyboardButton);
+            }
+            rowList.add(keyboardButtonsRow);
+
+        }
+        inlineKeyboardMarkup.setKeyboard(rowList);
         return inlineKeyboardMarkup;
     }
 
