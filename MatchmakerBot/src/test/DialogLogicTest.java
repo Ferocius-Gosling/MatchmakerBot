@@ -1,12 +1,8 @@
 package test;
 
 
-import com.company.AnswersStorage;
 import com.company.DialogLogic;
-import com.company.DialogStates;
 import com.company.User;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class DialogLogicTest {
     public DialogLogic logic = new DialogLogic();

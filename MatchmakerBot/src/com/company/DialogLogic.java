@@ -2,7 +2,7 @@ package com.company;
 
 public class DialogLogic {
     public Message getResponse(User user, Message messageFromUser) {
-        if (!user.isRegistred()) //todo not
+        if (!user.isRegistered()) //todo not
             return registerUser(user, messageFromUser);
         return switch (messageFromUser.getTextMessage()) {
             case "/help":
@@ -29,7 +29,7 @@ public class DialogLogic {
     private Message stop(User user) {
         return switch (user.getCurrentState()) {
             case FIND:
-                user.changeCurrentState(DialogStates.MENU);
+                user.changeCurrentState(DialogState.MENU);
                 yield new Message(AnswersStorage.stopMessage);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
@@ -74,7 +74,7 @@ public class DialogLogic {
                 yield new Message(AnswersStorage.matchErrorMessage + registerUser(user).getTextMessage());
             case MENU:
             case FIND:
-                user.changeCurrentState(DialogStates.FIND);
+                user.changeCurrentState(DialogState.FIND);
                 var userInQuestion = Bot.users.getNextUser(user);
                 if (userInQuestion == null) yield new Message(AnswersStorage.nobodyElseMessage);
                 user.setUserInQuestion(userInQuestion);
@@ -89,19 +89,19 @@ public class DialogLogic {
         return switch (user.getCurrentState()) {
             case REG_NAME:
                 user.setName(message.getTextMessage());
-                user.changeCurrentState(DialogStates.REG_AGE);
+                user.changeCurrentState(DialogState.REG_AGE);
                 yield new Message(AnswersStorage.regAgeMessage);
             case REG_AGE:
                 yield regAge(user, message.getTextMessage());
             case REG_CITY:
                 user.setCity(message.getTextMessage());
-                user.changeCurrentState(DialogStates.REG_INFO);
+                user.changeCurrentState(DialogState.REG_INFO);
                 yield new Message(AnswersStorage.regInfoMessage);
             case REG_INFO:
                 user.setInfo(message.getTextMessage());
                 user.setUserPhoto(message.getPhoto());
                 user.setReg(true);
-                user.changeCurrentState(DialogStates.MENU);
+                user.changeCurrentState(DialogState.MENU);
                 yield new Message(user.getUserPhoto(),
                         AnswersStorage.getUserInfo(user) + AnswersStorage.startFindingMessage);
             default:
@@ -131,7 +131,7 @@ public class DialogLogic {
         if ((iAge < 0) || (iAge > 150))
             return new Message(AnswersStorage.wrongAgeMessage);
         user.setAge(iAge);
-        user.changeCurrentState(DialogStates.REG_CITY);
+        user.changeCurrentState(DialogState.REG_CITY);
         return new Message(AnswersStorage.regCityMessage);
     }
 
@@ -140,7 +140,7 @@ public class DialogLogic {
             case MENU:
             case FIND:
             case START:
-                user.changeCurrentState(DialogStates.REG_NAME);
+                user.changeCurrentState(DialogState.REG_NAME);
                 user.setReg(false);
                 yield new Message(AnswersStorage.registerNameMessage);
             default:

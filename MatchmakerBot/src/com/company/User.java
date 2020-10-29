@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 public class User {
     private final long id;
-    private boolean isRegistred = true;
+    private boolean isRegistered = true;
     private boolean isRegEnded = false;
-    private DialogStates state;
+    private DialogState state;
     private String name;
     private int age;
     private String userName;
@@ -22,19 +22,19 @@ public class User {
         whoLikesThatUser = new ArrayList<User>();
         matchedUsers = new ArrayList<User>();
         this.id = id;
-        this.state = DialogStates.START;
+        this.state = DialogState.START;
     }
 
-    public void setUserInQuestion(User user){
+    public void setUserInQuestion(User user) {
         userInQuestion = user;
     }
 
-    public void clearMatched(){
+    public void clearMatched() {
         matchedUsers = new ArrayList<>();
     }
 
     public void addToWhoLikes() {
-        if (!containsWhoLikesUser(userInQuestion)){
+        if (!containsWhoLikesUser(userInQuestion)) {
             whoLikesThatUser.add(userInQuestion);
             if (userInQuestion.containsWhoLikesUser(this)) {
                 addToMatchedUsers(userInQuestion);
@@ -76,7 +76,7 @@ public class User {
     }
 
     public void setReg(boolean flag) {
-        this.isRegistred = flag;
+        this.isRegistered = flag;
         this.isRegEnded = flag;
     }
 
@@ -84,13 +84,15 @@ public class User {
         this.userPhoto = photo;
     }
 
-    public boolean isRegEnded() { return this.isRegEnded; }
-
-    public boolean isRegistred() {
-        return this.isRegistred;
+    public boolean isRegEnded() {
+        return this.isRegEnded;
     }
 
-    public DialogStates getCurrentState() {
+    public boolean isRegistered() {
+        return this.isRegistered;
+    }
+
+    public DialogState getCurrentState() {
         return this.state;
     }
 
@@ -122,7 +124,7 @@ public class User {
         return this.id;
     }
 
-    public void changeCurrentState(DialogStates nextState) {
+    public void changeCurrentState(DialogState nextState) {
         //mb validation
         this.state = nextState;
     }

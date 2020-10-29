@@ -22,20 +22,24 @@ public class Bot {
         var user = Bot.users.getUser(userId);
         user.setUserName(userName);
         var generatedMessage = generateMessage(user, messageFromUser);
-        
-        if (user.getCurrentState() == DialogStates.FIND && messageFromUser.getTextMessage().equals("/find")) {
-            generatedMessage.setInlineKeyboardData(new InlineKeyboardData());
-            var inlinedKeyboardData = generatedMessage.getInlineKeyboardData();
-            var rows = inlinedKeyboardData.getRows();
-            rows.add(new ArrayList<BotInlineKeyboardButton>());
-            rows.get(0).add(new BotInlineKeyboardButton("find\uD83D\uDC94", "/find"));
-            rows.get(0).add(new BotInlineKeyboardButton("like❤", "/like"));
-        }
+
+        if (user.getCurrentState() == DialogState.FIND &&
+                messageFromUser.getTextMessage().equals("/find"))
+            setInlineKeyboardForFind(generatedMessage);
         return generatedMessage;
     }
 
     public Message generateMessage(User user, Message messageFromUser) {
         return logic.getResponse(user, messageFromUser);
 
+    }
+
+    private void setInlineKeyboardForFind(Message generatedMessage) {
+        generatedMessage.setInlineKeyboardData(new InlineKeyboardData());
+        var inlinedKeyboardData = generatedMessage.getInlineKeyboardData();
+        var rows = inlinedKeyboardData.getRows();
+        rows.add(new ArrayList<>());
+        rows.get(0).add(new BotInlineKeyboardButton("find\uD83D\uDC94", "/find"));
+        rows.get(0).add(new BotInlineKeyboardButton("like❤", "/like"));
     }
 }
