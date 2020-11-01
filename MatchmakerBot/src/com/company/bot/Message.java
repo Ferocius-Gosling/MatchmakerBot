@@ -1,8 +1,10 @@
 package com.company.bot;
 
+import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 import com.company.bot.inlineKeyboard.InlineKeyboardData;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Message {
     private File photo;
@@ -20,7 +22,6 @@ public class Message {
         this.textMessage = textMessage;
         this.inlineKeyboardData = null;
     }
-
 
     public File getPhoto() {
         return this.photo;

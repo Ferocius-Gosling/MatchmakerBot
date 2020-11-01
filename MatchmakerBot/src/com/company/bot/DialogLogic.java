@@ -1,6 +1,8 @@
 package com.company.bot;
 
 import com.company.UserRepository;
+import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
+import com.company.bot.inlineKeyboard.InlineKeyboardData;
 
 public class DialogLogic {
     public Message getResponse(User user, Message messageFromUser, UserRepository users) {
@@ -80,8 +82,14 @@ public class DialogLogic {
                 var userInQuestion = users.getNextUser(user);
                 if (userInQuestion == null) yield new Message(AnswersStorage.nobodyElseMessage);
                 user.setUserInQuestion(userInQuestion);
-                yield new Message(userInQuestion.getUserPhoto(), (AnswersStorage.getUserInfo(userInQuestion)
-                + AnswersStorage.forwardMessage));
+                var generatedMessage = new Message(userInQuestion.getUserPhoto(), (AnswersStorage.getUserInfo(userInQuestion)
+                        + AnswersStorage.forwardMessage));
+                var inlineKeyboardData = new InlineKeyboardData();
+                inlineKeyboardData.addRow();
+                inlineKeyboardData.addButton(0, new BotInlineKeyboardButton("find\uD83D\uDC94", "/find"));
+                inlineKeyboardData.addButton(0, new BotInlineKeyboardButton("like❤", "/like"));
+                generatedMessage.setInlineKeyboardData(inlineKeyboardData);
+                yield generatedMessage;
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };

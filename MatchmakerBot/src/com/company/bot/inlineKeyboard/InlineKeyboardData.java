@@ -15,6 +15,10 @@ public class InlineKeyboardData {
         rows.get(rowNumber).add(button);
     }
 
+    public void addRow() {
+        rows.add(new ArrayList<>());
+    }
+
     public ArrayList<ArrayList<BotInlineKeyboardButton>> getRows() {
         return rows;
     }
