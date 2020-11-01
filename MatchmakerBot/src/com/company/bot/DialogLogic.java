@@ -1,7 +1,9 @@
 package com.company.bot;
 
+import com.company.UserRepository;
+
 public class DialogLogic {
-    public Message getResponse(User user, Message messageFromUser) {
+    public Message getResponse(User user, Message messageFromUser, UserRepository users) {
         if (!user.isRegistered()) //todo not
             return registerUser(user, messageFromUser);
         return switch (messageFromUser.getTextMessage()) {
@@ -10,7 +12,7 @@ public class DialogLogic {
             case "/reg":
                 yield registerUser(user);
             case "/find":
-                yield find(user);
+                yield find(user, users);
             case "/like":
                 yield like(user);
             case "/showbio":
@@ -68,14 +70,14 @@ public class DialogLogic {
         };
     }
 
-    private Message find(User user) {
+    private Message find(User user, UserRepository users) {
         return switch (user.getCurrentState()) {
             case START:
                 yield new Message(AnswersStorage.matchErrorMessage + registerUser(user).getTextMessage());
             case MENU:
             case FIND:
                 user.changeCurrentState(DialogState.FIND);
-                var userInQuestion = Bot.users.getNextUser(user);
+                var userInQuestion = users.getNextUser(user);
                 if (userInQuestion == null) yield new Message(AnswersStorage.nobodyElseMessage);
                 user.setUserInQuestion(userInQuestion);
                 yield new Message(userInQuestion.getUserPhoto(), (AnswersStorage.getUserInfo(userInQuestion)

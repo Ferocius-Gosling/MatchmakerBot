@@ -7,12 +7,12 @@ import com.company.bot.inlineKeyboard.InlineKeyboardData;
 import java.util.ArrayList;
 
 public class Bot {
-    public static UserRepository users;
+    private UserRepository users;
     private DialogLogic logic;
 
-    public Bot() {
-        users = new UserRepository();
-        logic = new DialogLogic();
+    public Bot(UserRepository userRep, DialogLogic logic) {
+        users = userRep;
+        this.logic = logic;
     }
 
     public void createUser(long id) {
@@ -23,7 +23,7 @@ public class Bot {
     public Message replyToUser(long userId, String userName, Message messageFromUser) {
         if (users.getUser(userId) == null)
             createUser(userId);
-        var user = Bot.users.getUser(userId);
+        var user = users.getUser(userId);
         user.setUserName(userName);
         var generatedMessage = generateMessage(user, messageFromUser);
 
@@ -34,7 +34,7 @@ public class Bot {
     }
 
     public Message generateMessage(User user, Message messageFromUser) {
-        return logic.getResponse(user, messageFromUser);
+        return logic.getResponse(user, messageFromUser, users);
 
     }
 
