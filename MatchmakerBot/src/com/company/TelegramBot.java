@@ -17,8 +17,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
+    private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
     private Bot bot;
 
     public TelegramBot(Bot bot) {
@@ -57,7 +60,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                 userName = update.getMessage().getFrom().getUserName();
                 textMessageFromUser = "qwerty";
             }
-
             Message messageFromUser = new Message(photoFromUser, textMessageFromUser);
             Message messageToUser;
             if (userName != null)
@@ -72,7 +74,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendPhoto(userId.toString(), messageToUser.getTextMessage()
                         .replace("_", "\\_"), messageToUser.getPhoto(), messageToUser.getInlineKeyboardData());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, e.getMessage());
         }
     }
 

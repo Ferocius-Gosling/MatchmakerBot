@@ -1,10 +1,15 @@
 package com.company.bot;
 
+import com.company.TelegramBot;
 import com.company.UserRepository;
 import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 import com.company.bot.inlineKeyboard.InlineKeyboardData;
 
+import java.util.logging.Logger;
+
 public class DialogLogic {
+    private static final Logger logger = Logger.getLogger(DialogLogic.class.getName());
+
     public Message getResponse(User user, Message messageFromUser, UserRepository users) {
         if (!user.isRegistered()) //todo not
             return registerUser(user, messageFromUser);
@@ -112,6 +117,7 @@ public class DialogLogic {
                 user.setUserPhoto(message.getPhoto());
                 user.setReg(true);
                 user.changeCurrentState(DialogState.MENU);
+                logger.info(String.format("User named %s is registered", user.getUserName()));
                 yield new Message(user.getUserPhoto(),
                         AnswersStorage.getUserInfo(user) + AnswersStorage.startFindingMessage);
             default:
