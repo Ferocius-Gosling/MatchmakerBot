@@ -1,12 +1,11 @@
-package com.company;
+package com.company.bot;
 
-public enum DialogStates {
+public enum DialogState {
     START,
     REG_NAME,
     REG_AGE,
     REG_CITY,
     REG_INFO,
     MENU,
-    DIALOG
-    //etc
+    FIND
 }

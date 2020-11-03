@@ -1,5 +1,7 @@
 package com.company;
 
+import com.company.bot.User;
+
 import java.util.*;
 
 public class UserRepository {
@@ -19,9 +21,18 @@ public class UserRepository {
         return users.get(id);
     }
 
-    public User getNextUser() {
+    public User getNextUser(User user) {
         var random = new Random();
         var next = random.nextInt(size());
+        var userToGet = users.get(ids.get(next));
+        if (size() == 1) return null;
+        var i = 0;
+        while (user.getId() == userToGet.getId() || !userToGet.isRegEnded()){
+            next = random.nextInt(size());
+            userToGet = users.get(ids.get(next));
+            i++;
+            if (i > 10) return null;
+        }
         return users.get(ids.get(next));
     }
 
