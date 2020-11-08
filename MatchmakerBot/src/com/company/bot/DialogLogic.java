@@ -5,6 +5,7 @@ import com.company.UserRepository;
 import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 import com.company.bot.inlineKeyboard.InlineKeyboardData;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DialogLogic {
@@ -117,7 +118,9 @@ public class DialogLogic {
                 user.setUserPhoto(message.getPhoto());
                 user.setReg(true);
                 user.changeCurrentState(DialogState.MENU);
-                logger.info(String.format("User named %s is registered", user.getUserName()));
+                logger.info(String.format(
+                        "Registration: id = %s; Name = \"%s\"; username = %s;",
+                        user.getId(), user.getName(), user.getUserName()));
                 yield new Message(user.getUserPhoto(),
                         AnswersStorage.getUserInfo(user) + AnswersStorage.startFindingMessage);
             default:
