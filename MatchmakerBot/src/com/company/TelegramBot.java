@@ -16,13 +16,30 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
+
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
     private Bot bot;
 
     public TelegramBot(Bot bot) {
+        try {
+            String currentDir = System.getProperty("user.dir");
+            if (System.getProperty("os.name").startsWith("Windows"))
+                LogManager.getLogManager().readConfiguration(
+                        new FileInputStream(
+                                currentDir + "\\MatchmakerBot\\src\\com\\company\\log.config"));
+            else
+                LogManager.getLogManager().readConfiguration(
+                        new FileInputStream(
+                                currentDir + "/MatchmakerBot/src/com/company/log.config"));
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.bot = bot;
     }
 
@@ -110,7 +127,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendPhoto.setReplyMarkup(inlineKeyboardMarkup);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
         execute(sendPhoto);
     }
