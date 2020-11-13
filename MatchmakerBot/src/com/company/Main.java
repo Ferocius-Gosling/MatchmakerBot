@@ -12,6 +12,7 @@ public class Main {
     public static void main(String[] args) {
         DialogLogic logic = new DialogLogic();
         UserRepository users = new UserRepository();
+        users.loadUsers();
         Bot bot = new Bot(users, logic);
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();

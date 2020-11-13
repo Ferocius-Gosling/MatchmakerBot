@@ -37,6 +37,12 @@ public class UserRepository {
         return users.get(ids.get(next));
     }
 
+    public void loadUsers() {
+        var storage = new SQLStorage();
+        users = storage.load();
+        ids = new ArrayList<>(users.keySet());
+    }
+
     public void addUser(User user) {
         var storage = new SQLStorage();
         var id = user.getId();

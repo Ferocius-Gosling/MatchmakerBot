@@ -25,6 +25,20 @@ public class User {
         this.state = DialogState.START;
     }
 
+    public User(long id, String username, String name, int age,
+                String city, String info, DialogState state, File userPhoto) {
+        this.id = id;
+        this.userName = username;
+        this.name = name;
+        this.city = city;
+        this.age = age;
+        this.info = info;
+        this.state = state;
+        this.userPhoto = userPhoto;
+        whoLikesThatUser = new ArrayList<User>();
+        matchedUsers = new ArrayList<User>();
+    }
+
     public void setUserInQuestion(User user) {
         userInQuestion = user;
     }
