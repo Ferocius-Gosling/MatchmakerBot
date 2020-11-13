@@ -4,6 +4,7 @@ import com.company.TelegramBot;
 import com.company.UserRepository;
 import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 import com.company.bot.inlineKeyboard.InlineKeyboardData;
+import org.apache.http.client.UserTokenHandler;
 
 import java.util.logging.Logger;
 
@@ -12,7 +13,7 @@ public class DialogLogic {
 
     public Message getResponse(User user, Message messageFromUser, UserRepository users) {
         if (!user.isRegistered()) //todo not
-            return registerUser(user, messageFromUser);
+            return registerUser(user, messageFromUser, users);
         return switch (messageFromUser.getTextMessage()) {
             case "/help":
                 yield new Message(AnswersStorage.helpMessage);
@@ -100,7 +101,7 @@ public class DialogLogic {
         };
     }
 
-    private Message registerUser(User user, Message message) {
+    private Message registerUser(User user, Message message, UserRepository users) {
         return switch (user.getCurrentState()) {
             case REG_NAME:
                 user.setName(message.getTextMessage());
@@ -130,6 +131,7 @@ public class DialogLogic {
             case START:
                 yield new Message(AnswersStorage.showbioErrorMessage + registerUser(user).getTextMessage());
             case MENU:
+            case FIND:
                 yield new Message(user.getUserPhoto(),
                         AnswersStorage.getUserInfo(user) + AnswersStorage.forwardMessage);
             default:

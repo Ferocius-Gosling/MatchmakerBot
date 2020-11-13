@@ -74,6 +74,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendPhoto(userId.toString(), messageToUser.getTextMessage()
                         .replace("_", "\\_"), messageToUser.getPhoto(), messageToUser.getInlineKeyboardData());
         } catch (Exception e) {
+            e.printStackTrace();
             logger.log(Level.WARNING, e.getMessage());
         }
     }

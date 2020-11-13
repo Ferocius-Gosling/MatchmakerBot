@@ -8,6 +8,7 @@ public class UserRepository {
     private HashMap<Long, User> users;
     private ArrayList<Long> ids;
 
+
     public UserRepository() {
         users = new HashMap<>();
         ids = new ArrayList<>();
@@ -37,10 +38,18 @@ public class UserRepository {
     }
 
     public void addUser(User user) {
+        var storage = new SQLStorage();
         var id = user.getId();
         ids.add(id);
         users.put(id, user);
+        storage.registerUser(user);
+        storage.close();
     }
 
+    public void updateUserState(User user) {
+        var storage = new SQLStorage();
+        storage.updateUser(user);
+        storage.close();
+    }
 
 }
