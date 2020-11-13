@@ -40,7 +40,7 @@ public class UserRepository {
     public void loadUsers() {
         var storage = new SQLStorage();
         users = storage.load();
-        ids = new ArrayList<>(users.keySet());
+        ids.addAll(users.keySet());
     }
 
     public void addUser(User user) {

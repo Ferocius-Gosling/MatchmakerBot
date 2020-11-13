@@ -34,6 +34,20 @@ public class User {
         this.age = age;
         this.info = info;
         this.state = state;
+        switch (state)
+        {
+            case REG_AGE:
+            case REG_NAME:
+            case REG_CITY:
+            case REG_INFO:
+                isRegistered = false;
+                isRegEnded = false;
+            case START:
+                isRegistered = true;
+                isRegEnded = false;
+            default:
+                isRegEnded = true;
+        }
         this.userPhoto = userPhoto;
         whoLikesThatUser = new ArrayList<User>();
         matchedUsers = new ArrayList<User>();
