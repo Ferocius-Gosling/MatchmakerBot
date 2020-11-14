@@ -1,5 +1,7 @@
 package com.company.bot;
 
+import com.company.UserRepository;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -62,11 +64,17 @@ public class User {
     }
 
     public void addToWhoLikes() {
+        whoLikesThatUser.add(userInQuestion);
+    }
+
+    public void addToWhoLikes(UserRepository users) {
         if (!containsWhoLikesUser(userInQuestion)) {
             whoLikesThatUser.add(userInQuestion);
+            users.updateLikes(this, userInQuestion);
             if (userInQuestion.containsWhoLikesUser(this)) {
                 addToMatchedUsers(userInQuestion);
                 userInQuestion.addToMatchedUsers(this);
+                users.updateMatches(this, userInQuestion);
             }
         }
     }

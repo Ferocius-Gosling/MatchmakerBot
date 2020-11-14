@@ -40,7 +40,23 @@ public class UserRepository {
     public void loadUsers() {
         var storage = new SQLStorage();
         users = storage.load();
+        for (User user : users.values()){
+            var likedUsers = storage.getIdLikedUser("likes", user);
+            for (long id : likedUsers) {
+                user.setUserInQuestion(users.get(id));
+                user.addToWhoLikes();
+            }
+            var matchedUsers = storage.getIdLikedUser("matches", user);
+            for (long id : matchedUsers)
+                user.addToMatchedUsers(users.get(id));
+        }
         ids.addAll(users.keySet());
+    }
+
+    public void clearMatches(User user) {
+        var storage = new SQLStorage();
+        storage.deleteFromMatches(user);
+        storage.close();
     }
 
     public void addUser(User user) {
@@ -49,6 +65,18 @@ public class UserRepository {
         ids.add(id);
         users.put(id, user);
         storage.registerUser(user);
+        storage.close();
+    }
+
+    public void updateLikes(User userWhoLiked, User userWhomLiked) {
+        var storage = new SQLStorage();
+        storage.updateLikes(userWhoLiked, userWhomLiked);
+        storage.close();
+    }
+
+    public void updateMatches(User userWhoLiked, User userWhomLiked){
+        var storage = new SQLStorage();
+        storage.updateMatches(userWhoLiked, userWhomLiked);
         storage.close();
     }
 

@@ -90,23 +90,86 @@ public class SQLStorage {
         }
     }
 
+    public void updateLikes(User userWhoLiked, User userWhomLiked) {
+        try(Statement statement = connection.createStatement()){
+            var query = String.format("SELECT * FROM likes WHERE " +
+                    "who_liked=%s and whom_liked=%s",
+                    userWhoLiked.getId(),
+                    userWhomLiked.getId());
+            var result = statement.executeQuery(query).next();
+            if (result)
+                return;
+            query = String.format("INSERT INTO likes (who_liked, whom_liked)" +
+                    " values(%s, %s)", userWhoLiked.getId(), userWhomLiked.getId());
+            statement.executeUpdate(query);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void updateMatches(User userWhoLiked, User userWhomLiked) {
+        try(Statement statement = connection.createStatement()){
+            var query = String.format("INSERT INTO matches (who_liked, whom_liked)" +
+                    " values(%s, %s)", userWhoLiked.getId(), userWhomLiked.getId());
+            statement.executeUpdate(query);
+            query = String.format("INSERT INTO matches (who_liked, whom_liked)" +
+                    " values(%s, %s)", userWhomLiked.getId(), userWhoLiked.getId());
+            statement.executeUpdate(query);
+            query = String.format("DELETE FROM likes WHERE " +
+                    "who_liked=%s and whom_liked=%s", userWhoLiked.getId(),
+                    userWhomLiked.getId());
+            statement.executeUpdate(query);
+            query = String.format("DELETE FROM likes WHERE " +
+                            "who_liked=%s and whom_liked=%s", userWhomLiked.getId(),
+                    userWhoLiked.getId());
+            statement.executeUpdate(query);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteFromMatches(User user) {
+        try(Statement statement = connection.createStatement()){
+            var query = String.format("DELETE FROM matches WHERE " +
+                            "who_liked=%s", user.getId());
+            statement.executeUpdate(query);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<Long> getIdLikedUser(String table, User user) {
+        try(Statement statement = connection.createStatement()){
+            var query = String.format("SELECT * FROM %s " +
+                    "WHERE who_liked=%s", table, user.getId());
+            var result = statement.executeQuery(query);
+            var ids = new ArrayList<Long>();
+            while (result.next())
+                ids.add(result.getLong("whom_liked"));
+            return ids;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
     public HashMap<Long, User> load(){
         try(Statement statement = connection.createStatement()){
             var users = new HashMap<Long, User>();
             var query = "SELECT * FROM users_data";
             var result = statement.executeQuery(query);
             while (result.next()) {
+                var id = result.getLong("id");
                 var state = DialogState.valueOf(result.getString("dialog"));
                 var photo = new File(getPathToPhotos(), result.getString("photo"));
-                users.put(result.getLong("id"),
-                        new User(result.getLong("id"),
-                        result.getString("username"),
+                var user = new User(id, result.getString("username"),
                         result.getString("name"),
                         result.getInt("age"),
                         result.getString("city"),
                         result.getString("description"),
-                        state, photo
-                        ));
+                        state, photo);
+                users.put(id, user);
             }
             return users;
         } catch (SQLException e){
