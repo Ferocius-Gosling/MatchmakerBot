@@ -1,5 +1,7 @@
 package com.company.bot;
 
+import com.company.UserRepository;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -25,6 +27,34 @@ public class User {
         this.state = DialogState.START;
     }
 
+    public User(long id, String username, String name, int age,
+                String city, String info, DialogState state, File userPhoto) {
+        this.id = id;
+        this.userName = username;
+        this.name = name;
+        this.city = city;
+        this.age = age;
+        this.info = info;
+        this.state = state;
+        switch (state)
+        {
+            case REG_AGE:
+            case REG_NAME:
+            case REG_CITY:
+            case REG_INFO:
+                isRegistered = false;
+                isRegEnded = false;
+            case START:
+                isRegistered = true;
+                isRegEnded = false;
+            default:
+                isRegEnded = true;
+        }
+        this.userPhoto = userPhoto;
+        whoLikesThatUser = new ArrayList<User>();
+        matchedUsers = new ArrayList<User>();
+    }
+
     public void setUserInQuestion(User user) {
         userInQuestion = user;
     }
@@ -34,11 +64,17 @@ public class User {
     }
 
     public void addToWhoLikes() {
+        whoLikesThatUser.add(userInQuestion);
+    }
+
+    public void addToWhoLikes(UserRepository users) {
         if (!containsWhoLikesUser(userInQuestion)) {
             whoLikesThatUser.add(userInQuestion);
+            users.updateLikes(this, userInQuestion);
             if (userInQuestion.containsWhoLikesUser(this)) {
                 addToMatchedUsers(userInQuestion);
                 userInQuestion.addToMatchedUsers(this);
+                users.updateMatches(this, userInQuestion);
             }
         }
     }

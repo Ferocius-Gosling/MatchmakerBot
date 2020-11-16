@@ -4,6 +4,7 @@ import com.company.TelegramBot;
 import com.company.UserRepository;
 import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 import com.company.bot.inlineKeyboard.InlineKeyboardData;
+import org.apache.http.client.UserTokenHandler;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,8 +13,8 @@ public class DialogLogic {
     private static final Logger logger = Logger.getLogger(DialogLogic.class.getName());
 
     public Message getResponse(User user, Message messageFromUser, UserRepository users) {
-        if (!user.isRegistered()) //todo not
-            return registerUser(user, messageFromUser);
+        if (!user.isRegistered())
+            return registerUser(user, messageFromUser, users);
         return switch (messageFromUser.getTextMessage()) {
             case "/help":
                 yield new Message(AnswersStorage.helpMessage);
@@ -22,11 +23,11 @@ public class DialogLogic {
             case "/find":
                 yield find(user, users);
             case "/like":
-                yield like(user);
+                yield like(user, users);
             case "/showbio":
                 yield showBio(user);
             case "/matches":
-                yield showMatches(user);
+                yield showMatches(user, users);
             case "/stop":
                 yield stop(user);
             case "/start":
@@ -46,7 +47,7 @@ public class DialogLogic {
         };
     }
 
-    private Message showMatches(User user) {
+    private Message showMatches(User user, UserRepository users) {
         return switch (user.getCurrentState()) {
             case START:
                 yield new Message(AnswersStorage.matchErrorMessage + registerUser(user).getTextMessage());
@@ -62,16 +63,17 @@ public class DialogLogic {
                     replyBuilder.append("\n\n");
                 }
                 user.clearMatched();
+                users.clearMatches(user);
                 yield new Message(replyBuilder.toString());
             default:
                 yield new Message(AnswersStorage.defaultMessage);
         };
     }
 
-    private Message like(User user) {
+    private Message like(User user, UserRepository users) {
         return switch (user.getCurrentState()) {
             case FIND:
-                user.addToWhoLikes();
+                user.addToWhoLikes(users);
                 yield new Message(AnswersStorage.likeMessage);
             default:
                 yield new Message(AnswersStorage.defaultMessage);
@@ -101,7 +103,7 @@ public class DialogLogic {
         };
     }
 
-    private Message registerUser(User user, Message message) {
+    private Message registerUser(User user, Message message, UserRepository users) {
         return switch (user.getCurrentState()) {
             case REG_NAME:
                 user.setName(message.getTextMessage());
@@ -133,6 +135,7 @@ public class DialogLogic {
             case START:
                 yield new Message(AnswersStorage.showbioErrorMessage + registerUser(user).getTextMessage());
             case MENU:
+            case FIND:
                 yield new Message(user.getUserPhoto(),
                         AnswersStorage.getUserInfo(user) + AnswersStorage.forwardMessage);
             default:

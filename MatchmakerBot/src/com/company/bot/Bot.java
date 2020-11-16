@@ -25,7 +25,9 @@ public class Bot {
             createUser(userId);
         var user = users.getUser(userId);
         user.setUserName(userName);
-        return generateMessage(user, messageFromUser);
+        var message = generateMessage(user, messageFromUser);
+        users.updateUserState(user);
+        return message;
     }
 
     public Message generateMessage(User user, Message messageFromUser) {
