@@ -39,7 +39,7 @@ public class UserRepository {
         return users.get(ids.get(next));
     }
 
-    public void loadUsers() throws SQLException, ClassNotFoundException {
+    public void loadUsers() throws SQLException, ClassNotFoundException, IOException {
         try (SQLStorage storage = new SQLStorage("hostname","db-login", "db-password")) {
             storage.createConnection();
             users = storage.load();

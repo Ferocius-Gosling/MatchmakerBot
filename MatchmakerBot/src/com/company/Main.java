@@ -14,9 +14,9 @@ public class Main {
     public static void main(String[] args) {
         DialogLogic logic = new DialogLogic();
         UserRepository users = new UserRepository();
-        try { // todo watch on catch, refactor
+        try {
             users.loadUsers();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         Bot bot = new Bot(users, logic);
