@@ -1,38 +1,48 @@
 package com.company;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
 
 import com.company.bot.DialogState;
 import com.company.bot.User;
+import com.mysql.cj.jdbc.Blob;
 
 
-public class SQLStorage {
+public class SQLStorage implements Closeable {
     private Connection connection;
+    private final Properties properties;
+    private final String host;
+    private static final String selectUsersDataQueryById =
+            "SELECT * FROM users_data WHERE id=?";
+    private static final String updateUsersDataQueryById =
+            "UPDATE users_data SET username=?, name=?, age=?, city=?, " +
+                    "description=?, photo=?, dialog=? WHERE id=?";
+    private static final String deleteUsersDataQueryById =
+            "DELETE FROM users_data WHERE id=?";
+    private static final String insertUsersDataQueryById =
+            "INSERT INTO users_data (id, dialog) values (?, ?)";
 
-    public SQLStorage(){
-        var host = getHost();
-        var login = getLogin();
-        var password = getPassword();
-        Properties properties = new Properties();
+
+    public SQLStorage(String hostname, String dbLogin, String pass){
+        host = System.getenv(hostname);
+        var login = System.getenv(dbLogin);
+        var password = System.getenv(pass);
+        properties = new Properties();
         properties.put("User", login);
         properties.put("password", password);
         properties.put("characterUnicode", "true");
         properties.put("useUnicode", "true");
         properties.put("useSSL", "false");
         properties.put("autoReconnect", "true");
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(host, properties);
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    }
+
+    public void createConnection() throws SQLException, ClassNotFoundException{
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        connection = DriverManager.getConnection(host, properties);
     }
 
     public void close() {
@@ -43,50 +53,51 @@ public class SQLStorage {
         }
     }
 
-    public void registerUser(User user) {
-        try(Statement statement = connection.createStatement()) {
-            var query = String.format("SELECT * FROM users_data WHERE id=%s", user.getId());
-            var result = statement.executeQuery(query).next();
+    public void registerUser(User user) throws SQLException{
+        try(PreparedStatement statement = connection.prepareStatement(selectUsersDataQueryById)) {
+            statement.setLong(1, user.getId());
+            var result = statement.executeQuery().next();
             if (result){
-                query = String.format("DELETE FROM users_data WHERE id=%s", user.getId());
-                statement.executeUpdate(query);
+                try(PreparedStatement statement1 = connection.prepareStatement(deleteUsersDataQueryById)) {
+                    statement1.setLong(1, user.getId());
+                    statement1.executeUpdate();
+                }
             }
-            query = String.format("INSERT INTO users_data (id) values (%s)",
-                    user.getId());
-            statement.executeUpdate(query);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        }
+        try(PreparedStatement statement = connection.prepareStatement(insertUsersDataQueryById)) {
+            statement.setLong(1, user.getId());
+            statement.setString(2, user.getCurrentState().toString());
+            statement.executeUpdate();
         }
     }
 
-    public void updateUser(User user) {
-        try(Statement statement = connection.createStatement()) {
-            var userPhoto = "";
-            if (user.getUserPhoto() == null)
-                userPhoto = null;
-            else {
-                var photo = user.getUserPhoto();
-                userPhoto = photo.getName();
-                var fileToSave = new File(getPathToPhotos(), userPhoto);
-                if (fileToSave.createNewFile()) {
-                    FileInputStream fileInputStream = new FileInputStream(photo);
-                    FileOutputStream fileOutputStream = new FileOutputStream(fileToSave);
-                    byte[] fileContent = new byte[(int) photo.length()];
-                    fileInputStream.read(fileContent);
-                    fileInputStream.close();
-                    fileOutputStream.write(fileContent);
-                    fileOutputStream.close();
+    public void updateUser(User user) throws SQLException, IOException{
+        try(PreparedStatement statement = connection.prepareStatement(updateUsersDataQueryById)) {
+            var photo = user.getUserPhoto(); //todo refactor if and try
+            if (photo != null) {
+                try (FileInputStream fileInputStream = new FileInputStream(photo);) {
+                    statement.setBinaryStream(6, fileInputStream, (int)photo.length());
+                    statement.setString(1, user.getUserName());
+                    statement.setString(2, user.getName());
+                    statement.setInt(3, user.getAge());
+                    statement.setString(4, user.getCity());
+                    statement.setString(5, user.getInfo());
+                    statement.setString(7, user.getCurrentState().toString());
+                    statement.setLong(8, user.getId());
+                    statement.executeUpdate();
                 }
             }
-            var query = String.format("UPDATE users_data SET " +
-                            "username=\"%s\", name=\"%s\", age=%s, city=\"%s\", description=\"%s\"," +
-                            "photo=\"%s\", dialog=\"%s\" WHERE id=%s",
-                    user.getUserName(), user.getName(), user.getAge(),
-                    user.getCity(), user.getInfo(), userPhoto, user.getCurrentState().toString(),
-                    user.getId());
-            statement.executeUpdate(query);
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
+            else {
+                statement.setBinaryStream(6, null);
+                statement.setString(1, user.getUserName());
+                statement.setString(2, user.getName());
+                statement.setInt(3, user.getAge());
+                statement.setString(4, user.getCity());
+                statement.setString(5, user.getInfo());
+                statement.setString(7, user.getCurrentState().toString());
+                statement.setLong(8, user.getId());
+                statement.executeUpdate();
+            }
         }
     }
 
@@ -162,7 +173,13 @@ public class SQLStorage {
             while (result.next()) {
                 var id = result.getLong("id");
                 var state = DialogState.valueOf(result.getString("dialog"));
-                var photo = new File(getPathToPhotos(), result.getString("photo"));
+                var photoContent = result.getBlob("photo");
+                File photo = new File(System.getenv("path_to_photos") + "/" + id);
+                try (var fileOutputStream = new FileOutputStream(photo)) {
+                    fileOutputStream.write(photoContent.getBytes(1, (int) photoContent.length()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 var user = new User(id, result.getString("username"),
                         result.getString("name"),
                         result.getInt("age"),
@@ -178,10 +195,6 @@ public class SQLStorage {
         return new HashMap<>();
     }
 
-
-    private String getHost(){ return System.getenv("hostname"); }
-    private String getLogin(){ return System.getenv("db-login"); }
-    private String getPassword(){ return System.getenv("db-password"); }
     private String getPathToPhotos() { return System.getenv("path_to_photos"); }
 
 }
