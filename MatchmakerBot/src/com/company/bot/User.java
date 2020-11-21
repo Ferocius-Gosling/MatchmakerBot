@@ -44,11 +44,14 @@ public class User {
             case REG_INFO:
                 isRegistered = false;
                 isRegEnded = false;
+                break;
             case START:
                 isRegistered = true;
                 isRegEnded = false;
+                break;
             default:
                 isRegEnded = true;
+                break;
         }
         this.userPhoto = userPhoto;
         whoLikesThatUser = new ArrayList<User>();

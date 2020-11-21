@@ -2,6 +2,8 @@ package com.company;
 
 import com.company.bot.User;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 
 public class UserRepository {
@@ -37,53 +39,73 @@ public class UserRepository {
         return users.get(ids.get(next));
     }
 
-    public void loadUsers() {
-        var storage = new SQLStorage();
-        users = storage.load();
-        for (User user : users.values()){
-            var likedUsers = storage.getIdLikedUser("likes", user);
-            for (long id : likedUsers) {
-                user.setUserInQuestion(users.get(id));
-                user.addToWhoLikes();
+    public void loadUsers() throws SQLException, ClassNotFoundException, IOException {
+        try (SQLStorage storage = new SQLStorage("hostname","db-login", "db-password")) {
+            storage.createConnection();
+            users = storage.load();
+            for (User user : users.values()){
+                var likedUsers = storage.getIdLikedUser("likes", user);
+                for (long id : likedUsers) {
+                    user.setUserInQuestion(users.get(id));
+                    user.addToWhoLikes();
+                }
+                var matchedUsers = storage.getIdLikedUser("matches", user);
+                for (long id : matchedUsers)
+                    user.addToMatchedUsers(users.get(id));
             }
-            var matchedUsers = storage.getIdLikedUser("matches", user);
-            for (long id : matchedUsers)
-                user.addToMatchedUsers(users.get(id));
+            ids.addAll(users.keySet());
         }
-        ids.addAll(users.keySet());
     }
-
+    // todo clear all catches
     public void clearMatches(User user) {
-        var storage = new SQLStorage();
-        storage.deleteFromMatches(user);
-        storage.close();
+        try(SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")){
+            storage.createConnection();
+            storage.deleteFromMatches(user);
+        } catch (SQLException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
     public void addUser(User user) {
-        var storage = new SQLStorage();
-        var id = user.getId();
-        ids.add(id);
-        users.put(id, user);
-        storage.registerUser(user);
-        storage.close();
+        try(SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")){
+            storage.createConnection();
+            var id = user.getId();
+            ids.add(id);
+            users.put(id, user);
+            storage.registerUser(user);
+        } catch (SQLException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
     public void updateLikes(User userWhoLiked, User userWhomLiked) {
-        var storage = new SQLStorage();
-        storage.updateLikes(userWhoLiked, userWhomLiked);
-        storage.close();
+        try(SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")){
+            storage.createConnection();
+            storage.updateLikes(userWhoLiked, userWhomLiked);
+        }
+        catch (SQLException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
-    public void updateMatches(User userWhoLiked, User userWhomLiked){
-        var storage = new SQLStorage();
-        storage.updateMatches(userWhoLiked, userWhomLiked);
-        storage.close();
+    public void updateMatches(User userWhoLiked, User userWhomLiked) {
+        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")){
+            storage.createConnection();
+            storage.updateMatches(userWhoLiked, userWhomLiked);
+        }
+        catch (SQLException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
     public void updateUserState(User user) {
-        var storage = new SQLStorage();
-        storage.updateUser(user);
-        storage.close();
+        try(SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")){
+            storage.createConnection();
+            storage.updateUser(user);
+        }
+        catch (SQLException | ClassNotFoundException | IOException e){
+            e.printStackTrace();
+        }
     }
 
 }

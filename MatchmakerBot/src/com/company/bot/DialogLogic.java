@@ -120,9 +120,8 @@ public class DialogLogic {
                 user.setUserPhoto(message.getPhoto());
                 user.setReg(true);
                 user.changeCurrentState(DialogState.MENU);
-                logger.info(String.format(
-                        "Registration: id = %s; Name = \"%s\"; username = %s;",
-                        user.getId(), user.getName(), user.getUserName()));
+                logger.warning(String.format("Registration: User: %s, UserID: %s, Name: %s",
+                        user.getUserName(), user.getId(), user.getName()));
                 yield new Message(user.getUserPhoto(),
                         AnswersStorage.getUserInfo(user) + AnswersStorage.startFindingMessage);
             default:
