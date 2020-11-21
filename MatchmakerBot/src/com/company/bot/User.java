@@ -3,6 +3,7 @@ package com.company.bot;
 import com.company.UserRepository;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class User {
@@ -36,8 +37,7 @@ public class User {
         this.age = age;
         this.info = info;
         this.state = state;
-        switch (state)
-        {
+        switch (state) {
             case REG_AGE:
             case REG_NAME:
             case REG_CITY:
@@ -70,7 +70,7 @@ public class User {
         whoLikesThatUser.add(userInQuestion);
     }
 
-    public void addToWhoLikes(UserRepository users) {
+    public void addToWhoLikes(UserRepository users) throws SQLException, ClassNotFoundException {
         if (!containsWhoLikesUser(userInQuestion)) {
             whoLikesThatUser.add(userInQuestion);
             users.updateLikes(this, userInQuestion);

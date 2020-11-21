@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -86,6 +87,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             logger.log(Level.WARNING, e.getMessage(), e);
             logUnhandledInput(update);
         }
+
     }
 
     public synchronized void sendMsg(String chatId, String messageToSend, InlineKeyboardData inlineKeyboardData) throws TelegramApiException {

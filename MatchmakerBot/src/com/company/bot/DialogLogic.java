@@ -6,13 +6,14 @@ import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 import com.company.bot.inlineKeyboard.InlineKeyboardData;
 import org.apache.http.client.UserTokenHandler;
 
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DialogLogic {
     private static final Logger logger = Logger.getLogger(DialogLogic.class.getName());
 
-    public Message getResponse(User user, Message messageFromUser, UserRepository users) {
+    public Message getResponse(User user, Message messageFromUser, UserRepository users) throws SQLException, ClassNotFoundException {
         if (!user.isRegistered())
             return registerUser(user, messageFromUser, users);
         return switch (messageFromUser.getTextMessage()) {
@@ -47,7 +48,7 @@ public class DialogLogic {
         };
     }
 
-    private Message showMatches(User user, UserRepository users) {
+    private Message showMatches(User user, UserRepository users) throws SQLException, ClassNotFoundException {
         return switch (user.getCurrentState()) {
             case START:
                 yield new Message(AnswersStorage.matchErrorMessage + registerUser(user).getTextMessage());
@@ -70,7 +71,7 @@ public class DialogLogic {
         };
     }
 
-    private Message like(User user, UserRepository users) {
+    private Message like(User user, UserRepository users) throws SQLException, ClassNotFoundException {
         return switch (user.getCurrentState()) {
             case FIND:
                 user.addToWhoLikes(users);
