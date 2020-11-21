@@ -25,21 +25,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private Bot bot;
 
     public TelegramBot(Bot bot) {
-        try {
-            String currentDir = System.getProperty("user.dir");
-            if (System.getProperty("os.name").startsWith("Windows"))
-                LogManager.getLogManager().readConfiguration(
-                        new FileInputStream(
-                                currentDir + "\\MatchmakerBot\\src\\com\\company\\log.config"));
-            else
-                LogManager.getLogManager().readConfiguration(
-                        new FileInputStream(
-                                currentDir + "/MatchmakerBot/src/com/company/log.config"));
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         this.bot = bot;
     }
 
@@ -115,7 +100,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         execute(sendMessage);
     }
 
-    public synchronized void sendPhoto(String chatId, String messageToSend, File photoToSend, InlineKeyboardData inlineKeyboardData) throws TelegramApiException {
+    public synchronized void sendPhoto(String chatId, String messageToSend, File photoToSend, InlineKeyboardData inlineKeyboardData) throws TelegramApiException, FileNotFoundException {
         SendPhoto sendPhoto = null;
         try {
             sendPhoto = new SendPhoto();
@@ -128,6 +113,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             }
         } catch (FileNotFoundException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
+            throw e;
         }
         execute(sendPhoto);
     }
