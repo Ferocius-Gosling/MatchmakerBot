@@ -7,9 +7,12 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.StringJoiner;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -37,17 +40,17 @@ public class Main {
 
     private static void configureLogger() {
         try {
+            StringJoiner joiner = new StringJoiner(File.separator)
+                    .add("MatchmakerBot")
+                    .add("src")
+                    .add("com")
+                    .add("company")
+                    .add("log.config");
+            var pathToConfig = File.separator + joiner.toString();
             String currentDir = System.getProperty("user.dir");
-            if (System.getProperty("os.name").startsWith("Windows"))
-                LogManager.getLogManager().readConfiguration(
-                        new FileInputStream(
-                                currentDir + "\\MatchmakerBot\\src\\com\\company\\log.config"));
-            else
-                LogManager.getLogManager().readConfiguration(
-                        new FileInputStream(
-                                currentDir + "/MatchmakerBot/src/com/company/log.config"));
-
-
+            LogManager.getLogManager().readConfiguration(
+                    new FileInputStream(
+                            currentDir + pathToConfig));
         } catch (IOException e) {
             e.printStackTrace();
         }
