@@ -24,11 +24,11 @@ public class SQLStorage implements Closeable {
     private static final String insertLikesQueryById =
             "INSERT INTO likes (who_liked, whom_liked) values(?, ?)";
     private static final String insertMatchesQueryById =
-            "INSERT INTO matches (who_liked, whom_liked) values(?, ?)";
+            "INSERT INTO matches (who_liked, whom_liked) values(?, ?);";
     private static final String deleteUsersDataQueryById =
             "DELETE FROM users_data WHERE id=?";
     private static final String deleteLikesQueryById =
-            "DELETE FROM likes WHERE who_liked=? and whom_liked=?";
+            "DELETE FROM likes WHERE who_liked=? and whom_liked=?;";
     private static final String deleteMatchesQueryById =
             "DELETE FROM matches WHERE who_liked=?";
     private static final String insertUsersDataQueryById =
@@ -121,20 +121,14 @@ public class SQLStorage implements Closeable {
     }
 
     public void updateMatches(User userWhoLiked, User userWhomLiked) throws SQLException {
-        try(PreparedStatement statement = connection.prepareStatement(insertMatchesQueryById)) {
+        try(PreparedStatement statement = connection.prepareStatement(insertMatchesQueryById)){
             statement.setLong(1, userWhoLiked.getId());
             statement.setLong(2, userWhomLiked.getId());
-            statement.executeUpdate();
-            statement.setLong(1, userWhomLiked.getId());
-            statement.setLong(2, userWhoLiked.getId());
-            statement.executeUpdate();
+            statement.execute();
         }
         try(PreparedStatement statement = connection.prepareStatement(deleteLikesQueryById)) {
             statement.setLong(1, userWhoLiked.getId());
             statement.setLong(2, userWhomLiked.getId());
-            statement.executeUpdate();
-            statement.setLong(1, userWhomLiked.getId());
-            statement.setLong(2, userWhoLiked.getId());
             statement.executeUpdate();
         }
     }

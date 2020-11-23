@@ -48,11 +48,13 @@ public class UserRepository {
                 var likedUsers = storage.getIdLikedUser("likes", user);
                 for (long id : likedUsers) {
                     user.setUserInQuestion(users.get(id));
-                    user.addToWhoLikes();
+                    user.addToWhoLikes(this);
                 }
                 var matchedUsers = storage.getIdLikedUser("matches", user);
-                for (long id : matchedUsers)
-                    user.addToMatchedUsers(users.get(id));
+                for (long id : matchedUsers){
+                    if (!user.getMatchedUsers().contains(users.get(id)))
+                        user.addToMatchedUsers(users.get(id));
+                }
             }
             ids.addAll(users.keySet());
         }
@@ -87,6 +89,7 @@ public class UserRepository {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
             storage.updateMatches(userWhoLiked, userWhomLiked);
+            storage.updateMatches(userWhomLiked, userWhoLiked);
         }
     }
 
