@@ -17,6 +17,7 @@ public class User {
     private String city;
     private String info;
     private User userInQuestion;
+    private Long userInQuestionId;
     private ArrayList<User> matchedUsers;
     private ArrayList<User> whoLikesThatUser;
     private File userPhoto;
@@ -29,7 +30,8 @@ public class User {
     }
 
     public User(long id, String username, String name, int age,
-                String city, String info, DialogState state, File userPhoto) {
+                String city, String info, DialogState state, File userPhoto,
+                long userInQuestionId) {
         this.id = id;
         this.userName = username;
         this.name = name;
@@ -56,10 +58,16 @@ public class User {
         this.userPhoto = userPhoto;
         whoLikesThatUser = new ArrayList<User>();
         matchedUsers = new ArrayList<User>();
+        this.userInQuestionId = userInQuestionId;
     }
 
     public void setUserInQuestion(User user) {
         userInQuestion = user;
+        userInQuestionId = user.getId();
+    }
+
+    public Long getUserInQuestionId() {
+        return userInQuestionId;
     }
 
     public void clearMatched() {

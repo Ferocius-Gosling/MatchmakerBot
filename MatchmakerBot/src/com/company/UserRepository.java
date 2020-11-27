@@ -5,8 +5,6 @@ import com.company.bot.User;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class UserRepository {
     private HashMap<Long, User> users;
@@ -17,50 +15,61 @@ public class UserRepository {
         ids = new ArrayList<>();
     }
 
-    public int size() {
-        return users.size();
-    }
-
-    public User getUser(long id) {
-        return users.get(id);
-    }
-
-    public User getNextUser(User user) {
-        var random = new Random();
-        var next = random.nextInt(size());
-        var userToGet = users.get(ids.get(next));
-        if (size() == 1) return null;
-        var i = 0;
-        while (user.getId() == userToGet.getId() || !userToGet.isRegEnded()) {
-            next = random.nextInt(size());
-            userToGet = users.get(ids.get(next));
-            i++;
-            if (i > 10) return null;
+    public User getUser(long id) throws SQLException {
+        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+        storage.createConnection();
+        var user = storage.loadUser(new User(id));
+        if (user.getUserInQuestionId() != 0)
+            user.setUserInQuestion(storage.loadUser(new User(user.getUserInQuestionId())));
+        return user;
+    } catch (IOException e) {
+        e.printStackTrace();
+        return null;
         }
-        return users.get(ids.get(next));
     }
 
-    public void loadUsers() throws SQLException, ClassNotFoundException, IOException {
+    public User getNextUser(User user) throws SQLException {
+//        var random = new Random();
+//        var next = random.nextInt(size());
+//        var userToGet = users.get(ids.get(next));
+//        if (size() == 1) return null;
+//        var i = 0;
+//        while (user.getId() == userToGet.getId() || !userToGet.isRegEnded()) {
+//            next = random.nextInt(size());
+//            userToGet = users.get(ids.get(next));
+//            i++;
+//            if (i > 10) return null;
+//        }
+//        return users.get(ids.get(next));
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
-            users = storage.load();
-            for (User user : users.values()) {
-                var likedUsers = storage.getIdLikedUser("likes", user);
-                for (long id : likedUsers) {
-                    user.setUserInQuestion(users.get(id));
-                    user.addToWhoLikes(this);
-                }
-                var matchedUsers = storage.getIdLikedUser("matches", user);
-                for (long id : matchedUsers){
-                    if (!user.getMatchedUsers().contains(users.get(id)))
-                        user.addToMatchedUsers(users.get(id));
-                }
-            }
-            ids.addAll(users.keySet());
+            return storage.loadUser(user);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
-    // todo clear all catches
+//    public void loadUsers() throws SQLException, ClassNotFoundException, IOException {
+//        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+//            storage.createConnection();
+//            users = storage.load();
+//            for (User user : users.values()) {
+//                var likedUsers = storage.getIdLikedUser("likes", user);
+//                for (long id : likedUsers) {
+//                    user.setUserInQuestion(users.get(id));
+//                    user.addToWhoLikes(this);
+//                }
+//                var matchedUsers = storage.getIdLikedUser("matches", user);
+//                for (long id : matchedUsers){
+//                    if (!user.getMatchedUsers().contains(users.get(id)))
+//                        user.addToMatchedUsers(users.get(id));
+//                }
+//            }
+//            ids.addAll(users.keySet());
+//        }
+//    }
+
     public void clearMatches(User user) throws SQLException, ClassNotFoundException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
@@ -71,9 +80,7 @@ public class UserRepository {
     public void addUser(User user) throws SQLException, ClassNotFoundException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
-            var id = user.getId();
-            ids.add(id);
-            users.put(id, user);
+            storage.deleteUser(user);
             storage.registerUser(user);
         }
     }
@@ -81,7 +88,8 @@ public class UserRepository {
     public void updateLikes(User userWhoLiked, User userWhomLiked) throws SQLException, ClassNotFoundException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
-            storage.updateLikes(userWhoLiked, userWhomLiked);
+            if (!storage.isRowInLikesExist(userWhoLiked, userWhomLiked))
+                storage.updateLikes(userWhoLiked, userWhomLiked);
         }
     }
 
@@ -90,14 +98,22 @@ public class UserRepository {
             storage.createConnection();
             storage.updateMatches(userWhoLiked, userWhomLiked);
             storage.updateMatches(userWhomLiked, userWhoLiked);
+            storage.deleteLikes(userWhoLiked, userWhomLiked);
+            storage.deleteLikes(userWhomLiked, userWhoLiked);
         }
     }
 
-    public void updateUserState(User user) throws SQLException, IOException, ClassNotFoundException {
+    public void updateUserState(User user) throws SQLException, IOException{
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
             storage.updateUser(user);
         }
     }
 
+    public void updateUserLastFind(User user) throws SQLException {
+        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+            storage.createConnection();
+            storage.updateLastFind(user);
+        }
+    }
 }

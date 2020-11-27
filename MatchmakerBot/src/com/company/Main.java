@@ -25,11 +25,11 @@ public class Main {
         configureLogger();
         DialogLogic logic = new DialogLogic();
         UserRepository users = new UserRepository();
-        try {
-            users.loadUsers();
-        } catch (Exception e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-        }
+//        try {
+//            users.loadUsers();
+//        } catch (Exception e) {
+//            logger.log(Level.WARNING, e.getMessage(), e);
+//        }
         Bot bot = new Bot(users, logic);
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();

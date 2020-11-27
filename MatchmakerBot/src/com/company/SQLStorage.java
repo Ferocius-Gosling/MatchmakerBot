@@ -3,7 +3,7 @@ package com.company;
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.Properties;
 
 import com.company.bot.DialogState;
@@ -20,7 +20,10 @@ public class SQLStorage implements Closeable {
             "SELECT * FROM likes WHERE who_liked=? and whom_liked=?";
     private static final String updateUsersDataQueryById =
             "UPDATE users_data SET username=?, name=?, age=?, city=?, " +
-                    "description=?, photo=?, dialog=? WHERE id=?";
+                    "description=?, photo=?, dialog=?, user_in_question=?" +
+                    " WHERE id=?";
+    private static final String updateUserLastFindById =
+            "UPDATE users_data SET last_find=? WHERE id=?";
     private static final String insertLikesQueryById =
             "INSERT INTO likes (who_liked, whom_liked) values(?, ?)";
     private static final String insertMatchesQueryById =
@@ -35,6 +38,8 @@ public class SQLStorage implements Closeable {
             "INSERT INTO users_data (id, dialog) values (?, ?)";
     private static final String selectTableQueryById =
             "SELECT * FROM %s WHERE who_liked=?";
+    private static final String selectUsersOrderedByTime =
+            "SELECT * FROM users_data WHERE id!=? ORDER BY last_find DESC";
 
     public SQLStorage(String hostname, String dbLogin, String pass) {
         host = System.getenv(hostname);
@@ -49,8 +54,8 @@ public class SQLStorage implements Closeable {
         properties.put("autoReconnect", "true");
     }
 
-    public void createConnection() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
+    public void createConnection() throws SQLException {
+       // Class.forName("com.mysql.cj.jdbc.Driver");
         connection = DriverManager.getConnection(host, properties);
     }
 
@@ -61,17 +66,14 @@ public class SQLStorage implements Closeable {
         }
     }
 
-    public void registerUser(User user) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(selectUsersDataQueryById)) {
+    public void deleteUser(User user) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(deleteUsersDataQueryById)) {
             statement.setLong(1, user.getId());
-            var result = statement.executeQuery().next();
-            if (result) {
-                try (PreparedStatement statement1 = connection.prepareStatement(deleteUsersDataQueryById)) {
-                    statement1.setLong(1, user.getId());
-                    statement1.executeUpdate();
-                }
-            }
+            statement.executeUpdate();
         }
+    }
+
+    public void registerUser(User user) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(insertUsersDataQueryById)) {
             statement.setLong(1, user.getId());
             statement.setString(2, user.getCurrentState().toString());
@@ -95,7 +97,8 @@ public class SQLStorage implements Closeable {
             statement.setString(4, user.getCity());
             statement.setString(5, user.getInfo());
             statement.setString(7, user.getCurrentState().toString());
-            statement.setLong(8, user.getId());
+            statement.setLong(8, user.getUserInQuestionId());
+            statement.setLong(9, user.getId());
             statement.executeUpdate();
             if (fileInputStream != null) {
                 fileInputStream.close();
@@ -103,13 +106,24 @@ public class SQLStorage implements Closeable {
         }
     }
 
-    public void updateLikes(User userWhoLiked, User userWhomLiked) throws SQLException {
+    public void updateLastFind(User user) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(updateUserLastFindById)){
+            var date = new Date();
+            statement.setTimestamp(1, new Timestamp(date.getTime()));
+            statement.setLong(2, user.getId());
+            statement.executeUpdate();
+        }
+    }
+
+    public boolean isRowInLikesExist(User userWhoLiked, User userWhomLiked) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(selectLikesQueryByID)) {
             statement.setLong(1, userWhoLiked.getId());
             statement.setLong(2, userWhomLiked.getId());
-            if (statement.executeQuery().next())
-                return;
+            return statement.executeQuery().next();
         }
+    }
+
+    public void updateLikes(User userWhoLiked, User userWhomLiked) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(insertLikesQueryById)) {
             statement.setLong(1, userWhoLiked.getId());
             statement.setLong(2, userWhomLiked.getId());
@@ -123,6 +137,9 @@ public class SQLStorage implements Closeable {
             statement.setLong(2, userWhomLiked.getId());
             statement.execute();
         }
+    }
+
+    public void deleteLikes(User userWhoLiked, User userWhomLiked) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(deleteLikesQueryById)) {
             statement.setLong(1, userWhoLiked.getId());
             statement.setLong(2, userWhomLiked.getId());
@@ -149,12 +166,15 @@ public class SQLStorage implements Closeable {
         }
     }
 
-    public HashMap<Long, User> load() throws SQLException, IOException {
-        try (Statement statement = connection.createStatement()) {
-            var users = new HashMap<Long, User>();
-            var query = "SELECT * FROM users_data";
-            var result = statement.executeQuery(query);
-            while (result.next()) {
+    public User loadUser(User userWhoLiked) throws SQLException, IOException {
+        String query;
+        if (userWhoLiked.getCity() == null) query = selectUsersDataQueryById;
+        else query = selectUsersOrderedByTime;
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            User user;
+            statement.setLong(1, userWhoLiked.getId());
+            var result = statement.executeQuery();
+            if (result.next()) {
                 var id = result.getLong("id");
                 var state = DialogState.valueOf(result.getString("dialog"));
                 var photoContent = result.getBlob("photo");
@@ -165,15 +185,14 @@ public class SQLStorage implements Closeable {
                     }
                 } else
                     photo = null;
-                var user = new User(id, result.getString("username"),
+                user = new User(id, result.getString("username"),
                         result.getString("name"),
                         result.getInt("age"),
                         result.getString("city"),
                         result.getString("description"),
-                        state, photo);
-                users.put(id, user);
-            }
-            return users;
+                        state, photo, result.getLong("user_in_question"));
+            } else return null;
+            return user;
         }
     }
 }

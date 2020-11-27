@@ -6,14 +6,18 @@ import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 import com.company.bot.inlineKeyboard.InlineKeyboardData;
 import org.apache.http.client.UserTokenHandler;
 
+import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DialogLogic {
     private static final Logger logger = Logger.getLogger(DialogLogic.class.getName());
 
-    public Message getResponse(User user, Message messageFromUser, UserRepository users) throws SQLException, ClassNotFoundException {
+    public Message getResponse(User user, Message messageFromUser, UserRepository users)
+            throws SQLException, ClassNotFoundException{
         if (!user.isRegistered())
             return registerUser(user, messageFromUser, users);
         return switch (messageFromUser.getTextMessage()) {
@@ -81,7 +85,7 @@ public class DialogLogic {
         };
     }
 
-    private Message find(User user, UserRepository users) {
+    private Message find(User user, UserRepository users) throws SQLException {
         return switch (user.getCurrentState()) {
             case START:
                 yield new Message(AnswersStorage.matchErrorMessage + registerUser(user).getTextMessage());
@@ -91,6 +95,7 @@ public class DialogLogic {
                 var userInQuestion = users.getNextUser(user);
                 if (userInQuestion == null) yield new Message(AnswersStorage.nobodyElseMessage);
                 user.setUserInQuestion(userInQuestion);
+                users.updateUserLastFind(userInQuestion);
                 var generatedMessage = new Message(userInQuestion.getUserPhoto(), (AnswersStorage.getUserInfo(userInQuestion)
                         + AnswersStorage.forwardMessage));
                 var inlineKeyboardData = new InlineKeyboardData();
@@ -121,7 +126,7 @@ public class DialogLogic {
                 user.setUserPhoto(message.getPhoto());
                 user.setReg(true);
                 user.changeCurrentState(DialogState.MENU);
-                logger.warning(String.format("Registration: User: %s, UserID: %s, Name: %s",
+                logger.info(String.format("Registration: User: %s, UserID: %s, Name: %s",
                         user.getUserName(), user.getId(), user.getName()));
                 yield new Message(user.getUserPhoto(),
                         AnswersStorage.getUserInfo(user) + AnswersStorage.startFindingMessage);
