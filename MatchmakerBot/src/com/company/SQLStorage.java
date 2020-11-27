@@ -36,7 +36,7 @@ public class SQLStorage implements Closeable {
     private static final String selectTableQueryById =
             "SELECT * FROM %s WHERE who_liked=?";
 
-    public SQLStorage(String hostname, String dbLogin, String pass){
+    public SQLStorage(String hostname, String dbLogin, String pass) {
         host = System.getenv(hostname);
         var login = System.getenv(dbLogin);
         var password = System.getenv(pass);
@@ -49,7 +49,7 @@ public class SQLStorage implements Closeable {
         properties.put("autoReconnect", "true");
     }
 
-    public void createConnection() throws SQLException, ClassNotFoundException{
+    public void createConnection() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         connection = DriverManager.getConnection(host, properties);
     }
@@ -57,38 +57,36 @@ public class SQLStorage implements Closeable {
     public void close() {
         try {
             connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
     }
 
-    public void registerUser(User user) throws SQLException{
-        try(PreparedStatement statement = connection.prepareStatement(selectUsersDataQueryById)) {
+    public void registerUser(User user) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(selectUsersDataQueryById)) {
             statement.setLong(1, user.getId());
             var result = statement.executeQuery().next();
-            if (result){
-                try(PreparedStatement statement1 = connection.prepareStatement(deleteUsersDataQueryById)) {
+            if (result) {
+                try (PreparedStatement statement1 = connection.prepareStatement(deleteUsersDataQueryById)) {
                     statement1.setLong(1, user.getId());
                     statement1.executeUpdate();
                 }
             }
         }
-        try(PreparedStatement statement = connection.prepareStatement(insertUsersDataQueryById)) {
+        try (PreparedStatement statement = connection.prepareStatement(insertUsersDataQueryById)) {
             statement.setLong(1, user.getId());
             statement.setString(2, user.getCurrentState().toString());
             statement.executeUpdate();
         }
     }
 
-    public void updateUser(User user) throws SQLException, IOException{
-        try(PreparedStatement statement = connection.prepareStatement(updateUsersDataQueryById)) {
+    public void updateUser(User user) throws SQLException, IOException {
+        try (PreparedStatement statement = connection.prepareStatement(updateUsersDataQueryById)) {
             var photo = user.getUserPhoto(); //todo refactor if and try
             FileInputStream fileInputStream = null;
             if (photo != null) {
                 fileInputStream = new FileInputStream(photo);
-                statement.setBinaryStream(6, fileInputStream, (int)photo.length());
-            }
-            else {
+                statement.setBinaryStream(6, fileInputStream, (int) photo.length());
+            } else {
                 statement.setBinaryStream(6, null);
             }
             statement.setString(1, user.getUserName());
@@ -106,14 +104,13 @@ public class SQLStorage implements Closeable {
     }
 
     public void updateLikes(User userWhoLiked, User userWhomLiked) throws SQLException {
-        try(PreparedStatement statement = connection.prepareStatement(selectLikesQueryByID))
-        {
+        try (PreparedStatement statement = connection.prepareStatement(selectLikesQueryByID)) {
             statement.setLong(1, userWhoLiked.getId());
             statement.setLong(2, userWhomLiked.getId());
             if (statement.executeQuery().next())
                 return;
         }
-        try(PreparedStatement statement = connection.prepareStatement(insertLikesQueryById)) {
+        try (PreparedStatement statement = connection.prepareStatement(insertLikesQueryById)) {
             statement.setLong(1, userWhoLiked.getId());
             statement.setLong(2, userWhomLiked.getId());
             statement.executeUpdate();
@@ -121,12 +118,12 @@ public class SQLStorage implements Closeable {
     }
 
     public void updateMatches(User userWhoLiked, User userWhomLiked) throws SQLException {
-        try(PreparedStatement statement = connection.prepareStatement(insertMatchesQueryById)){
+        try (PreparedStatement statement = connection.prepareStatement(insertMatchesQueryById)) {
             statement.setLong(1, userWhoLiked.getId());
             statement.setLong(2, userWhomLiked.getId());
             statement.execute();
         }
-        try(PreparedStatement statement = connection.prepareStatement(deleteLikesQueryById)) {
+        try (PreparedStatement statement = connection.prepareStatement(deleteLikesQueryById)) {
             statement.setLong(1, userWhoLiked.getId());
             statement.setLong(2, userWhomLiked.getId());
             statement.executeUpdate();
@@ -134,15 +131,15 @@ public class SQLStorage implements Closeable {
     }
 
     public void deleteFromMatches(User user) throws SQLException {
-        try(PreparedStatement statement = connection.prepareStatement(deleteMatchesQueryById)){
+        try (PreparedStatement statement = connection.prepareStatement(deleteMatchesQueryById)) {
             statement.setLong(1, user.getId());
             statement.executeUpdate();
         }
     }
 
     public ArrayList<Long> getIdLikedUser(String table, User user) throws SQLException {
-        try(PreparedStatement statement = connection.prepareStatement(
-                String.format(selectTableQueryById, table))){
+        try (PreparedStatement statement = connection.prepareStatement(
+                String.format(selectTableQueryById, table))) {
             statement.setLong(1, user.getId());
             var result = statement.executeQuery();
             var ids = new ArrayList<Long>();
@@ -152,8 +149,8 @@ public class SQLStorage implements Closeable {
         }
     }
 
-    public HashMap<Long, User> load() throws SQLException, IOException{
-        try(Statement statement = connection.createStatement()){
+    public HashMap<Long, User> load() throws SQLException, IOException {
+        try (Statement statement = connection.createStatement()) {
             var users = new HashMap<Long, User>();
             var query = "SELECT * FROM users_data";
             var result = statement.executeQuery(query);
