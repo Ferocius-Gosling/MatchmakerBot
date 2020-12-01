@@ -78,7 +78,7 @@ public class User {
         whoLikesThatUser.add(userInQuestion);
     }
 
-    public void addToWhoLikes(UserRepository users) throws SQLException, ClassNotFoundException {
+    public void addToWhoLikes(UserRepository users) throws SQLException {
         if (!containsWhoLikesUser(userInQuestion)) {
             whoLikesThatUser.add(userInQuestion);
             users.updateLikes(this, userInQuestion);

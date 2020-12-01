@@ -39,7 +39,7 @@ public class SQLStorage implements Closeable {
     private static final String selectTableQueryById =
             "SELECT * FROM %s WHERE who_liked=?";
     private static final String selectUsersOrderedByTime =
-            "SELECT * FROM users_data WHERE id!=? ORDER BY last_find DESC";
+            "SELECT * FROM users_data WHERE id!=? ORDER BY last_find ASC";
 
     public SQLStorage(String hostname, String dbLogin, String pass) {
         host = System.getenv(hostname);

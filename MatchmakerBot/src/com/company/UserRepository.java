@@ -19,8 +19,28 @@ public class UserRepository {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
         storage.createConnection();
         var user = storage.loadUser(new User(id));
+        User currentUserInQuestion = null;
+        if (user == null)
+            return null;
         if (user.getUserInQuestionId() != 0)
-            user.setUserInQuestion(storage.loadUser(new User(user.getUserInQuestionId())));
+            currentUserInQuestion = storage.loadUser(new User(user.getUserInQuestionId()));
+        var likedUsers = storage.getIdLikedUser("likes", user);
+        for (long likedId : likedUsers) {
+            var likedUser = storage.loadUser(new User(likedId));
+            if (storage.getIdLikedUser("likes", likedUser).contains(user.getId())){
+                likedUser.setUserInQuestion(user);
+                likedUser.addToWhoLikes();
+            }
+            user.setUserInQuestion(likedUser);
+            user.addToWhoLikes(this);
+        }
+        var matchedUsers = storage.getIdLikedUser("matches", user);
+        for (long matchedId : matchedUsers) {
+            if (!user.getMatchedUsers().contains(storage.loadUser(new User(matchedId))))
+                user.addToMatchedUsers(storage.loadUser(new User(matchedId)));
+        }
+        if (user.getUserInQuestionId() != 0)
+            user.setUserInQuestion(currentUserInQuestion);
         return user;
     } catch (IOException e) {
         e.printStackTrace();
@@ -70,14 +90,14 @@ public class UserRepository {
 //        }
 //    }
 
-    public void clearMatches(User user) throws SQLException, ClassNotFoundException {
+    public void clearMatches(User user) throws SQLException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
             storage.deleteFromMatches(user);
         }
     }
 
-    public void addUser(User user) throws SQLException, ClassNotFoundException {
+    public void addUser(User user) throws SQLException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
             storage.deleteUser(user);
@@ -85,7 +105,7 @@ public class UserRepository {
         }
     }
 
-    public void updateLikes(User userWhoLiked, User userWhomLiked) throws SQLException, ClassNotFoundException {
+    public void updateLikes(User userWhoLiked, User userWhomLiked) throws SQLException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
             if (!storage.isRowInLikesExist(userWhoLiked, userWhomLiked))
@@ -93,7 +113,7 @@ public class UserRepository {
         }
     }
 
-    public void updateMatches(User userWhoLiked, User userWhomLiked) throws SQLException, ClassNotFoundException {
+    public void updateMatches(User userWhoLiked, User userWhomLiked) throws SQLException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
             storage.updateMatches(userWhoLiked, userWhomLiked);
