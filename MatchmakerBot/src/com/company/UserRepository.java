@@ -5,10 +5,13 @@ import com.company.bot.User;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserRepository {
     private HashMap<Long, User> users;
     private ArrayList<Long> ids;
+    private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
 
     public UserRepository() {
         users = new HashMap<>();
@@ -17,34 +20,34 @@ public class UserRepository {
 
     public User getUser(long id) throws SQLException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
-        storage.createConnection();
-        var user = storage.loadUser(new User(id));
-        User currentUserInQuestion = null;
-        if (user == null)
-            return null;
-        if (user.getUserInQuestionId() != 0)
-            currentUserInQuestion = storage.loadUser(new User(user.getUserInQuestionId()));
-        var likedUsers = storage.getIdLikedUser("likes", user);
-        for (long likedId : likedUsers) {
-            var likedUser = storage.loadUser(new User(likedId));
-            if (storage.getIdLikedUser("likes", likedUser).contains(user.getId())){
-                likedUser.setUserInQuestion(user);
-                likedUser.addToWhoLikes();
+            storage.createConnection();
+            var user = storage.loadUser(new User(id));
+            User currentUserInQuestion = null;
+            if (user == null)
+                return null;
+            if (user.getUserInQuestionId() != 0)
+                currentUserInQuestion = storage.loadUser(new User(user.getUserInQuestionId()));
+            var likedUsers = storage.getIdLikedUser("likes", user);
+            for (long likedId : likedUsers) {
+                var likedUser = storage.loadUser(new User(likedId));
+                if (storage.getIdLikedUser("likes", likedUser).contains(user.getId())) {
+                    likedUser.setUserInQuestion(user);
+                    likedUser.addToWhoLikes();
+                }
+                user.setUserInQuestion(likedUser);
+                user.addToWhoLikes(this);
             }
-            user.setUserInQuestion(likedUser);
-            user.addToWhoLikes(this);
-        }
-        var matchedUsers = storage.getIdLikedUser("matches", user);
-        for (long matchedId : matchedUsers) {
-            if (!user.getMatchedUsers().contains(storage.loadUser(new User(matchedId))))
-                user.addToMatchedUsers(storage.loadUser(new User(matchedId)));
-        }
-        if (user.getUserInQuestionId() != 0)
-            user.setUserInQuestion(currentUserInQuestion);
-        return user;
-    } catch (IOException e) {
-        e.printStackTrace();
-        return null;
+            var matchedUsers = storage.getIdLikedUser("matches", user);
+            for (long matchedId : matchedUsers) {
+                if (!user.getMatchedUsers().contains(storage.loadUser(new User(matchedId))))
+                    user.addToMatchedUsers(storage.loadUser(new User(matchedId)));
+            }
+            if (user.getUserInQuestionId() != 0)
+                user.setUserInQuestion(currentUserInQuestion);
+            return user;
+        } catch (IOException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            return null;
         }
     }
 
@@ -65,7 +68,7 @@ public class UserRepository {
             storage.createConnection();
             return storage.loadUser(user);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, e.getMessage(), e);
             return null;
         }
     }
@@ -123,7 +126,7 @@ public class UserRepository {
         }
     }
 
-    public void updateUserState(User user) throws SQLException, IOException{
+    public void updateUserState(User user) throws SQLException, IOException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
             storage.updateUser(user);
