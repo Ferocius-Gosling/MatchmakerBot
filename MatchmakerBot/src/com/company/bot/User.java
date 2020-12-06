@@ -172,7 +172,6 @@ public class User {
     }
 
     public void changeCurrentState(DialogState nextState) {
-        //mb validation
         this.state = nextState;
     }
 }

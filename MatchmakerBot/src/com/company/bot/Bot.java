@@ -1,12 +1,9 @@
 package com.company.bot;
 
 import com.company.*;
-import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
-import com.company.bot.inlineKeyboard.InlineKeyboardData;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class Bot {
     private UserRepository users;

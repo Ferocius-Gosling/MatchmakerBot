@@ -1,23 +1,17 @@
 package com.company.bot;
 
-import com.company.TelegramBot;
 import com.company.UserRepository;
 import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 import com.company.bot.inlineKeyboard.InlineKeyboardData;
-import org.apache.http.client.UserTokenHandler;
 
-import java.io.IOException;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DialogLogic {
     private static final Logger logger = Logger.getLogger(DialogLogic.class.getName());
 
     public Message getResponse(User user, Message messageFromUser, UserRepository users)
-            throws SQLException, ClassNotFoundException{
+            throws SQLException, ClassNotFoundException {
         if (!user.isRegistered())
             return registerUser(user, messageFromUser, users);
         return switch (messageFromUser.getTextMessage()) {

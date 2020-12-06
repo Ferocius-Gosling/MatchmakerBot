@@ -52,18 +52,6 @@ public class UserRepository {
     }
 
     public User getNextUser(User user) throws SQLException {
-//        var random = new Random();
-//        var next = random.nextInt(size());
-//        var userToGet = users.get(ids.get(next));
-//        if (size() == 1) return null;
-//        var i = 0;
-//        while (user.getId() == userToGet.getId() || !userToGet.isRegEnded()) {
-//            next = random.nextInt(size());
-//            userToGet = users.get(ids.get(next));
-//            i++;
-//            if (i > 10) return null;
-//        }
-//        return users.get(ids.get(next));
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
             storage.createConnection();
             return storage.loadUser(user);
@@ -72,26 +60,6 @@ public class UserRepository {
             return null;
         }
     }
-
-//    public void loadUsers() throws SQLException, ClassNotFoundException, IOException {
-//        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
-//            storage.createConnection();
-//            users = storage.load();
-//            for (User user : users.values()) {
-//                var likedUsers = storage.getIdLikedUser("likes", user);
-//                for (long id : likedUsers) {
-//                    user.setUserInQuestion(users.get(id));
-//                    user.addToWhoLikes(this);
-//                }
-//                var matchedUsers = storage.getIdLikedUser("matches", user);
-//                for (long id : matchedUsers){
-//                    if (!user.getMatchedUsers().contains(users.get(id)))
-//                        user.addToMatchedUsers(users.get(id));
-//                }
-//            }
-//            ids.addAll(users.keySet());
-//        }
-//    }
 
     public void clearMatches(User user) throws SQLException {
         try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {

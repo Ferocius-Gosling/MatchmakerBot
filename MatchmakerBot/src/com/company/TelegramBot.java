@@ -13,11 +13,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
@@ -120,25 +118,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         execute(sendPhoto);
     }
 
-
-//    public synchronized void setKeyboard(SendMessage sendMessage) {
-//        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-//        sendMessage.setReplyMarkup(replyKeyboardMarkup);
-//        replyKeyboardMarkup.setSelective(true);
-//        replyKeyboardMarkup.setResizeKeyboard(true);
-//        replyKeyboardMarkup.setOneTimeKeyboard(false);
-//        List<KeyboardRow> keyboard = new ArrayList<>();
-//        KeyboardRow keyboardFirstRow = new KeyboardRow();
-//        KeyboardRow keyboardSecondRow = new KeyboardRow();
-//        var b = new KeyboardButton();
-//        keyboardFirstRow.add(new KeyboardButton("/help"));
-//        keyboardFirstRow.add(new KeyboardButton("/reg"));
-//        keyboardSecondRow.add(new KeyboardButton("/showbio"));
-//        keyboardSecondRow.add(new KeyboardButton("/matches"));
-//        keyboard.add(keyboardFirstRow);
-//        keyboard.add(keyboardSecondRow);
-//        replyKeyboardMarkup.setKeyboard(keyboard);
-//    }
 
     public synchronized InlineKeyboardMarkup createInlineKeyboardMarkup(InlineKeyboardData inlineKeyboardData) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
