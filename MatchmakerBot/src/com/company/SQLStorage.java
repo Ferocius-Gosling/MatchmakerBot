@@ -41,10 +41,8 @@ public class SQLStorage implements Closeable {
     private static final String selectUsersOrderedByTime =
             "SELECT * FROM users_data WHERE id!=? ORDER BY last_find ASC";
 
-    public SQLStorage(String hostname, String dbLogin, String pass) {
-        host = System.getenv(hostname);
-        var login = System.getenv(dbLogin);
-        var password = System.getenv(pass);
+    public SQLStorage(String host, String login, String password) {
+        this.host = host;
         properties = new Properties();
         properties.put("User", login);
         properties.put("password", password);
@@ -55,7 +53,7 @@ public class SQLStorage implements Closeable {
     }
 
     public void createConnection() throws SQLException {
-       // Class.forName("com.mysql.cj.jdbc.Driver");
+        // Class.forName("com.mysql.cj.jdbc.Driver");
         connection = DriverManager.getConnection(host, properties);
     }
 
@@ -107,7 +105,7 @@ public class SQLStorage implements Closeable {
     }
 
     public void updateLastFind(User user) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(updateUserLastFindById)){
+        try (PreparedStatement statement = connection.prepareStatement(updateUserLastFindById)) {
             var date = new Date();
             statement.setTimestamp(1, new Timestamp(date.getTime()));
             statement.setLong(2, user.getId());

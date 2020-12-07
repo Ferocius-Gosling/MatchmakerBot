@@ -11,15 +11,21 @@ import java.util.logging.Logger;
 public class UserRepository {
     private HashMap<Long, User> users;
     private ArrayList<Long> ids;
+    private String hostname;
+    private String dbLogin;
+    private String dbPassword;
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
 
-    public UserRepository() {
+    public UserRepository(String hostname, String dbLogin, String dbPassword) {
         users = new HashMap<>();
         ids = new ArrayList<>();
+        this.hostname = hostname;
+        this.dbLogin = dbLogin;
+        this.dbPassword = dbPassword;
     }
 
     public User getUser(long id) throws SQLException {
-        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+        try (SQLStorage storage = new SQLStorage(hostname, dbLogin, dbPassword)) {
             storage.createConnection();
             var user = storage.loadUser(new User(id));
             User currentUserInQuestion = null;
@@ -52,7 +58,7 @@ public class UserRepository {
     }
 
     public User getNextUser(User user) throws SQLException {
-        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+        try (SQLStorage storage = new SQLStorage(hostname, dbLogin, dbPassword)) {
             storage.createConnection();
             return storage.loadUser(user);
         } catch (IOException e) {
@@ -62,14 +68,14 @@ public class UserRepository {
     }
 
     public void clearMatches(User user) throws SQLException {
-        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+        try (SQLStorage storage = new SQLStorage(hostname, dbLogin, dbPassword)) {
             storage.createConnection();
             storage.deleteFromMatches(user);
         }
     }
 
     public void addUser(User user) throws SQLException {
-        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+        try (SQLStorage storage = new SQLStorage(hostname, dbLogin, dbPassword)) {
             storage.createConnection();
             storage.deleteUser(user);
             storage.registerUser(user);
@@ -77,7 +83,7 @@ public class UserRepository {
     }
 
     public void updateLikes(User userWhoLiked, User userWhomLiked) throws SQLException {
-        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+        try (SQLStorage storage = new SQLStorage(hostname, dbLogin, dbPassword)) {
             storage.createConnection();
             if (!storage.isRowInLikesExist(userWhoLiked, userWhomLiked))
                 storage.updateLikes(userWhoLiked, userWhomLiked);
@@ -85,7 +91,7 @@ public class UserRepository {
     }
 
     public void updateMatches(User userWhoLiked, User userWhomLiked) throws SQLException {
-        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+        try (SQLStorage storage = new SQLStorage(hostname, dbLogin, dbPassword)) {
             storage.createConnection();
             storage.updateMatches(userWhoLiked, userWhomLiked);
             storage.updateMatches(userWhomLiked, userWhoLiked);
@@ -95,14 +101,14 @@ public class UserRepository {
     }
 
     public void updateUserState(User user) throws SQLException, IOException {
-        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+        try (SQLStorage storage = new SQLStorage(hostname, dbLogin, dbPassword)) {
             storage.createConnection();
             storage.updateUser(user);
         }
     }
 
     public void updateUserLastFind(User user) throws SQLException {
-        try (SQLStorage storage = new SQLStorage("hostname", "db-login", "db-password")) {
+        try (SQLStorage storage = new SQLStorage(hostname, dbLogin, dbPassword)) {
             storage.createConnection();
             storage.updateLastFind(user);
         }

@@ -20,7 +20,10 @@ public class Main {
     public static void main(String[] args) throws IOException {
         configureLogger();
         DialogLogic logic = new DialogLogic();
-        UserRepository users = new UserRepository();
+        var host = System.getenv("hostname");
+        var login = System.getenv("db-login");
+        var password = System.getenv("db-password");
+        UserRepository users = new UserRepository(host, login, password);
         Bot bot = new Bot(users, logic);
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
