@@ -51,7 +51,7 @@ public class AnswersStorage {
     }
 
     private static String getBotName() {
-        return answers.getElementsByTagName("botName").item(0).getTextContent();
+        return answers.getElementsByTagName("botname").item(0).getTextContent();
     }
 
     public static String getRegisterNameMessage() {
