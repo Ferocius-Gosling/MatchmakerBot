@@ -1,47 +1,67 @@
 package com.company.bot;
 
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.util.StringJoiner;
+
 public class AnswersStorage {
-    public static String helpMessage = """
-            Напишите /reg, чтобы зарегистрировать себя в базе.
-            Можно изменить анкету написав /reg после регистрации.
-            Напишите /help, чтобы вывести это сообщение ещё раз.
-            Напишите /showbio, чтобы посмотреть свою анкету.
-            Напишите /find, чтобы посмотреть другие анкеты.
-            Напишите /like, чтобы лайкнуть понравившуюся анкету.
-            Напишите /matches, чтобы посмотреть все совпадения.
-            """;
-    // "THIS IS HELP AND THIS IS WORK";
+
+    private DocumentBuilderFactory docBuilderFactory;
+    private DocumentBuilder docBuilder;
+    private static Document answers;
+
+    public AnswersStorage() throws ParserConfigurationException, IOException, SAXException {
+        docBuilderFactory = DocumentBuilderFactory.newInstance();
+        docBuilder = docBuilderFactory.newDocumentBuilder();
+        answers = docBuilder.parse(new File(configureAnswersPath("ru.xml")));
+    }
+
+    private String configureAnswersPath(String fileName) {
+        StringJoiner joiner = new StringJoiner(File.separator)
+                .add("MatchmakerBot")
+                .add("src")
+                .add("com")
+                .add("company")
+                .add("bot")
+                .add("answers")
+                .add(fileName);
+        var pathToDoc = File.separator + joiner.toString();
+        String currentDir = System.getProperty("user.dir");
+        return currentDir + pathToDoc;
+    }
+
+    public static String helpMessage = answers.getElementsByTagName("helpMessage").item(0).getNodeValue();
 
 
-    public static String defaultMessage = "Не понимаю вашего запроса." +
-            " Вызовите /help для справки.";
-    private final static String botName = "MatchmakerBot - Вячесlove";
-    public static String registerNameMessage = "Регистрация: Напишите своё имя.";
-    public static String regAgeMessage = "Напишите свой возраст арабскими цифрами, в пределах от 0 до 150 лет.";
-    public static String wrongAgeMessage = "Я же попросил написать возраст арабскими цифрами, в пределах от 0 до 150 лет.!\n" +
-            "Перепишите пожалуйста.";
-    public static String regCityMessage = "Напишите город в котором вы находитесь.";
-    public static String regInfoMessage = "Расскажите о себе одним сообщением.\nМожете добавить свое фото.";
-    public static String startMessage = String.format("Приветствую странник. Меня зовут %s!\n", botName);
-    public static String forcedRegMessage = "Сейчас начнётся процесс регистрации. \n\n";
-    public static String showbioErrorMessage = "Вы ещё не зарегистрировались. \n" +
-            "Я не могу показать вам вашу анкету.\n" + forcedRegMessage;
-    public static String matchErrorMessage = "Вы ещё не зарегистрировались. \n" +
-            "Я не могу показать вам другие анкеты.\n" + forcedRegMessage;
-    public static String regErrorMessage = "Вы уже зарегистрированы.";
-    public static String noUsernameError = "Для работы бота вам необходимо задать username в настройках Telegram";
-    public static String showMatchesMessage = "Вот ваши совпадения: \n \n";
-    public static String likeMessage = "Ждите ответа от вашей второй половинки.\n " +
-            "Чтобы посмотреть свои совпадения напишите /matches. \n" +
-            "Чтобы продолжить искать половинку напишите /find.";
-    public static String stopMessage = "Хватит пока искать свою половинку.";
-    public static String nobodyElseMessage = "Не могу найти вам подходящего человека :(" +
-            "Подождите пока кто-нибудь ещё зарегистрируется";
-    public static String forwardMessage = "\n Поставить лайк: /like \n Скипнуть: /find \n";
-    public static String startFindingMessage = "\nНачать поиск половинки: /find";
+    public static String defaultMessage = answers.getElementsByTagName("defaultMessage").item(0).getNodeValue();
+    private final static String botName = answers.getElementsByTagName("botName").item(0).getNodeValue();
+    public static String registerNameMessage = answers.getElementsByTagName("registerNameMessage").item(0).getNodeValue();
+    public static String regAgeMessage = answers.getElementsByTagName("regAgeMessage").item(0).getNodeValue();
+    public static String wrongAgeMessage = answers.getElementsByTagName("wrongAgeMessage").item(0).getNodeValue();
+    public static String regCityMessage = answers.getElementsByTagName("regCityMessage").item(0).getNodeValue();
+    public static String regInfoMessage = answers.getElementsByTagName("regInfoMessage").item(0).getNodeValue();
+    public static String startMessage = String.format(answers.getElementsByTagName("startMessage").item(0).getNodeValue() +
+            "\n", botName);
+    public static String forcedRegMessage = answers.getElementsByTagName("forcedRegMessage").item(0).getNodeValue() + "\n\n";
+    public static String showbioErrorMessage = answers.getElementsByTagName("showbioErrorMessage").item(0).getNodeValue()
+            + forcedRegMessage;
+    public static String matchErrorMessage = defaultMessage = answers.getElementsByTagName("matchErrorMessage").item(0).getNodeValue();
+    public static String noUsernameError = answers.getElementsByTagName("noUsernameError").item(0).getNodeValue();
+    public static String showMatchesMessage = answers.getElementsByTagName("showMatchesMessage").item(0).getNodeValue() + "\n\n";
+    public static String likeMessage = answers.getElementsByTagName("likeMessage").item(0).getNodeValue();
+    public static String stopMessage = answers.getElementsByTagName("stopMessage").item(0).getNodeValue();
+    public static String nobodyElseMessage = answers.getElementsByTagName("nobodyElseMessage").item(0).getNodeValue();
+    public static String forwardMessage = "\n" + answers.getElementsByTagName("forwardMessage").item(0).getNodeValue() + "\n";
+    public static String startFindingMessage = "\n"+answers.getElementsByTagName("nobodyElseMessage").item(0).getNodeValue();
 
     public static String getUserInfo(User user) {
-        return String.format("Имя: %s\nВозраст: %d\nГород: %s\n++++Описание++++\n%s",
+        return String.format(answers.getElementsByTagName("UserInfo").item(0).getNodeValue(),
                 user.getName(), user.getAge(), user.getCity(), user.getInfo());
     }
 
