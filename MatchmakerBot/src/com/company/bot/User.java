@@ -21,17 +21,19 @@ public class User {
     private ArrayList<User> matchedUsers;
     private ArrayList<User> whoLikesThatUser;
     private File userPhoto;
+    private AnswerLang lang;
 
     public User(long id) {
         whoLikesThatUser = new ArrayList<User>();
         matchedUsers = new ArrayList<User>();
         this.id = id;
+        this.lang = AnswerLang.RU;
         this.state = DialogState.START;
     }
 
     public User(long id, String username, String name, int age,
                 String city, String info, DialogState state, File userPhoto,
-                long userInQuestionId) {
+                long userInQuestionId, AnswerLang lang) {
         this.id = id;
         this.userName = username;
         this.name = name;
@@ -39,6 +41,7 @@ public class User {
         this.age = age;
         this.info = info;
         this.state = state;
+        this.lang = lang;
         switch (state) {
             case REG_AGE:
             case REG_NAME:
@@ -60,6 +63,12 @@ public class User {
         matchedUsers = new ArrayList<User>();
         this.userInQuestionId = userInQuestionId;
     }
+
+    public void changeLang(AnswerLang lang){
+        this.lang = lang;
+    }
+
+    public AnswerLang getLang() { return lang; }
 
     public void setUserInQuestion(User user) {
         userInQuestion = user;

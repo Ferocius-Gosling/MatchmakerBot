@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 
+import com.company.bot.AnswerLang;
 import com.company.bot.DialogState;
 import com.company.bot.User;
 
@@ -20,8 +21,8 @@ public class SQLStorage implements Closeable {
             "SELECT * FROM likes WHERE who_liked=? and whom_liked=?";
     private static final String updateUsersDataQueryById =
             "UPDATE users_data SET username=?, name=?, age=?, city=?, " +
-                    "description=?, photo=?, dialog=?, user_in_question=?" +
-                    " WHERE id=?";
+                    "description=?, photo=?, dialog=?, user_in_question=?, " +
+                    "lang=? WHERE id=?";
     private static final String updateUserLastFindById =
             "UPDATE users_data SET last_find=? WHERE id=?";
     private static final String insertLikesQueryById =
@@ -96,7 +97,8 @@ public class SQLStorage implements Closeable {
             statement.setString(5, user.getInfo());
             statement.setString(7, user.getCurrentState().toString());
             statement.setLong(8, user.getUserInQuestionId());
-            statement.setLong(9, user.getId());
+            statement.setString(9, user.getLang().toString());
+            statement.setLong(10, user.getId());
             statement.executeUpdate();
             if (fileInputStream != null) {
                 fileInputStream.close();
@@ -175,6 +177,7 @@ public class SQLStorage implements Closeable {
             if (result.next()) {
                 var id = result.getLong("id");
                 var state = DialogState.valueOf(result.getString("dialog"));
+                var lang = AnswerLang.valueOf(result.getString("lang"));
                 var photoContent = result.getBlob("photo");
                 File photo = new File(System.getenv("path_to_photos") + "/" + id);
                 if (photoContent != null) {
@@ -188,7 +191,8 @@ public class SQLStorage implements Closeable {
                         result.getInt("age"),
                         result.getString("city"),
                         result.getString("description"),
-                        state, photo, result.getLong("user_in_question"));
+                        state, photo,
+                        result.getLong("user_in_question"), lang);
             } else return null;
             return user;
         }
