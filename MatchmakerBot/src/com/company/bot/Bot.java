@@ -1,7 +1,9 @@
 package com.company.bot;
 
 import com.company.*;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -19,7 +21,8 @@ public class Bot {
         users.addUser(client);
     }
 
-    public Message replyToUser(long userId, String userName, Message messageFromUser) throws SQLException, ClassNotFoundException, IOException {
+    public Message replyToUser(long userId, String userName, Message messageFromUser) throws SQLException,
+            ClassNotFoundException, IOException, ParserConfigurationException, SAXException {
         if (users.getUser(userId) == null)
             createUser(userId);
         var user = users.getUser(userId);
@@ -29,7 +32,8 @@ public class Bot {
         return message;
     }
 
-    public Message generateMessage(User user, Message messageFromUser) throws SQLException, ClassNotFoundException {
+    public Message generateMessage(User user, Message messageFromUser) throws SQLException, ClassNotFoundException,
+            ParserConfigurationException, SAXException, IOException {
         return logic.getResponse(user, messageFromUser, users);
 
     }

@@ -14,8 +14,8 @@ public class DialogLogic {
     private static final Logger logger = Logger.getLogger(DialogLogic.class.getName());
 
     public Message getResponse(User user, Message messageFromUser, UserRepository users)
-            throws SQLException, ClassNotFoundException, IOException, SAXException, ParserConfigurationException {
-        AnswersStorage.configureAnswerStorage(AnswerLang.RU);
+            throws SQLException, IOException, SAXException, ParserConfigurationException {
+        AnswersStorage.configureAnswerStorage(user.getLang());
         if (!user.isRegistered())
             return registerUser(user, messageFromUser, users);
         return switch (messageFromUser.getTextMessage()) {
@@ -50,7 +50,7 @@ public class DialogLogic {
         };
     }
 
-    private Message showMatches(User user, UserRepository users) throws SQLException, ClassNotFoundException {
+    private Message showMatches(User user, UserRepository users) throws SQLException {
         return switch (user.getCurrentState()) {
             case START:
                 yield new Message(AnswersStorage.getMatchErrorMessage() + registerUser(user).getTextMessage());
@@ -60,10 +60,10 @@ public class DialogLogic {
                 replyBuilder.append(AnswersStorage.getShowMatchesMessage());
                 for (User u : user.getMatchedUsers()) {
                     replyBuilder.append(AnswersStorage.getUserInfo(u));
-                    replyBuilder.append("\n\n");
+                    replyBuilder.append("\n");
                     replyBuilder.append("@");
                     replyBuilder.append(u.getUserName());
-                    replyBuilder.append("\n\n");
+                    replyBuilder.append("\n");
                 }
                 user.clearMatched();
                 users.clearMatches(user);
@@ -73,7 +73,7 @@ public class DialogLogic {
         };
     }
 
-    private Message like(User user, UserRepository users) throws SQLException, ClassNotFoundException {
+    private Message like(User user, UserRepository users) throws SQLException {
         return switch (user.getCurrentState()) {
             case FIND:
                 user.addToWhoLikes(users);

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 
+import com.company.bot.AnswerLang;
 import com.company.bot.DialogState;
 import com.company.bot.User;
 
@@ -175,6 +176,7 @@ public class SQLStorage implements Closeable {
             if (result.next()) {
                 var id = result.getLong("id");
                 var state = DialogState.valueOf(result.getString("dialog"));
+                var lang = AnswerLang.valueOf(result.getString("lang"));
                 var photoContent = result.getBlob("photo");
                 File photo = new File(System.getenv("path_to_photos") + "/" + id);
                 if (photoContent != null) {
@@ -188,7 +190,8 @@ public class SQLStorage implements Closeable {
                         result.getInt("age"),
                         result.getString("city"),
                         result.getString("description"),
-                        state, photo, result.getLong("user_in_question"));
+                        state, photo,
+                        result.getLong("user_in_question"), lang);
             } else return null;
             return user;
         }
