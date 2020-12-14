@@ -1,6 +1,9 @@
 package com.company.bot;
 
+import com.company.UserRepository;
+
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class User {
@@ -14,6 +17,7 @@ public class User {
     private String city;
     private String info;
     private User userInQuestion;
+    private Long userInQuestionId;
     private ArrayList<User> matchedUsers;
     private ArrayList<User> whoLikesThatUser;
     private File userPhoto;
@@ -25,8 +29,45 @@ public class User {
         this.state = DialogState.START;
     }
 
+    public User(long id, String username, String name, int age,
+                String city, String info, DialogState state, File userPhoto,
+                long userInQuestionId) {
+        this.id = id;
+        this.userName = username;
+        this.name = name;
+        this.city = city;
+        this.age = age;
+        this.info = info;
+        this.state = state;
+        switch (state) {
+            case REG_AGE:
+            case REG_NAME:
+            case REG_CITY:
+            case REG_INFO:
+                isRegistered = false;
+                isRegEnded = false;
+                break;
+            case START:
+                isRegistered = true;
+                isRegEnded = false;
+                break;
+            default:
+                isRegEnded = true;
+                break;
+        }
+        this.userPhoto = userPhoto;
+        whoLikesThatUser = new ArrayList<User>();
+        matchedUsers = new ArrayList<User>();
+        this.userInQuestionId = userInQuestionId;
+    }
+
     public void setUserInQuestion(User user) {
         userInQuestion = user;
+        userInQuestionId = user.getId();
+    }
+
+    public Long getUserInQuestionId() {
+        return userInQuestionId;
     }
 
     public void clearMatched() {
@@ -34,11 +75,17 @@ public class User {
     }
 
     public void addToWhoLikes() {
+        whoLikesThatUser.add(userInQuestion);
+    }
+
+    public void addToWhoLikes(UserRepository users) throws SQLException {
         if (!containsWhoLikesUser(userInQuestion)) {
             whoLikesThatUser.add(userInQuestion);
+            users.updateLikes(this, userInQuestion);
             if (userInQuestion.containsWhoLikesUser(this)) {
                 addToMatchedUsers(userInQuestion);
                 userInQuestion.addToMatchedUsers(this);
+                users.updateMatches(this, userInQuestion);
             }
         }
     }
@@ -125,7 +172,6 @@ public class User {
     }
 
     public void changeCurrentState(DialogState nextState) {
-        //mb validation
         this.state = nextState;
     }
 }

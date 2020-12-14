@@ -12,15 +12,14 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
+
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
     private Bot bot;
 
@@ -56,8 +55,17 @@ public class TelegramBot extends TelegramLongPollingBot {
                 String filePath = execute(getFile).getFilePath();
                 photoFromUser = this.downloadFile(filePath);
             } else {
-                userId = update.getMessage().getChatId();
-                userName = update.getMessage().getFrom().getUserName();
+                if (update.hasCallbackQuery()) {
+                    var callbackQuery = update.getCallbackQuery();
+                    userId = callbackQuery.getMessage().getChatId();
+                    userName = callbackQuery.getFrom().getUserName();
+                }
+                if (update.hasMessage()) {
+                    var message = update.getMessage();
+                    userId = message.getChatId();
+                    userName = message.getFrom().getUserName();
+                }
+                logUnhandledInput(update);
                 textMessageFromUser = "qwerty";
             }
             Message messageFromUser = new Message(photoFromUser, textMessageFromUser);
@@ -74,8 +82,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendPhoto(userId.toString(), messageToUser.getTextMessage()
                         .replace("_", "\\_"), messageToUser.getPhoto(), messageToUser.getInlineKeyboardData());
         } catch (Exception e) {
-            logger.log(Level.WARNING, e.getMessage());
+            logger.log(Level.WARNING, e.getMessage(), e);
+            logUnhandledInput(update);
         }
+
     }
 
     public synchronized void sendMsg(String chatId, String messageToSend, InlineKeyboardData inlineKeyboardData) throws TelegramApiException {
@@ -90,7 +100,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         execute(sendMessage);
     }
 
-    public synchronized void sendPhoto(String chatId, String messageToSend, File photoToSend, InlineKeyboardData inlineKeyboardData) throws TelegramApiException {
+    public synchronized void sendPhoto(String chatId, String messageToSend, File photoToSend, InlineKeyboardData inlineKeyboardData) throws TelegramApiException, FileNotFoundException {
         SendPhoto sendPhoto = null;
         try {
             sendPhoto = new SendPhoto();
@@ -102,30 +112,12 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendPhoto.setReplyMarkup(inlineKeyboardMarkup);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, e.getMessage(), e);
+            throw e;
         }
         execute(sendPhoto);
     }
 
-
-//    public synchronized void setKeyboard(SendMessage sendMessage) {
-//        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-//        sendMessage.setReplyMarkup(replyKeyboardMarkup);
-//        replyKeyboardMarkup.setSelective(true);
-//        replyKeyboardMarkup.setResizeKeyboard(true);
-//        replyKeyboardMarkup.setOneTimeKeyboard(false);
-//        List<KeyboardRow> keyboard = new ArrayList<>();
-//        KeyboardRow keyboardFirstRow = new KeyboardRow();
-//        KeyboardRow keyboardSecondRow = new KeyboardRow();
-//        var b = new KeyboardButton();
-//        keyboardFirstRow.add(new KeyboardButton("/help"));
-//        keyboardFirstRow.add(new KeyboardButton("/reg"));
-//        keyboardSecondRow.add(new KeyboardButton("/showbio"));
-//        keyboardSecondRow.add(new KeyboardButton("/matches"));
-//        keyboard.add(keyboardFirstRow);
-//        keyboard.add(keyboardSecondRow);
-//        replyKeyboardMarkup.setKeyboard(keyboard);
-//    }
 
     public synchronized InlineKeyboardMarkup createInlineKeyboardMarkup(InlineKeyboardData inlineKeyboardData) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -146,6 +138,80 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
         inlineKeyboardMarkup.setKeyboard(rowList);
         return inlineKeyboardMarkup;
+    }
+
+    private void logUnhandledInput(Update update) {
+        var userId = 0l;
+        var userName = "";
+        var hasMessage = update.hasMessage();
+        var hasCallbackQuerry = update.hasCallbackQuery();
+        var hasEditedMessage = update.hasEditedMessage();
+        var text = "";
+        var hasPhoto = false;
+        var hasVideo = false;
+        var hasLocation = false;
+        var hasDocument = false;
+        var hasAudio = false;
+        var hasVoice = false;
+        var hasSticker = false;
+        var hasAnimation = false;
+        var hasVideoNote = false;
+        var caption = "";
+        if (hasMessage) {
+            var message = update.getMessage();
+            userId = message.getChatId();
+            userName = message.getFrom().getUserName();
+            hasPhoto = message.hasPhoto();
+            hasVideo = message.hasVideo();
+            hasDocument = message.hasDocument();
+            hasAudio = message.hasAudio();
+            hasVoice = message.hasVoice();
+            hasSticker = message.hasSticker();
+            hasAnimation = message.hasAnimation();
+            hasLocation = message.hasLocation();
+            hasVideoNote = message.hasVideoNote();
+            if (message.hasText())
+                text = message.getText();
+            if (message.getCaption() != null)
+                caption = message.getCaption();
+        }
+
+        if (hasCallbackQuerry) {
+            var callbackQuery = update.getCallbackQuery();
+            userId = callbackQuery.getMessage().getChatId();
+            userName = callbackQuery.getFrom().getUserName();
+            hasPhoto = callbackQuery.getMessage().hasPhoto();
+            hasVideo = callbackQuery.getMessage().hasVideo();
+            hasDocument = callbackQuery.getMessage().hasDocument();
+            hasAudio = callbackQuery.getMessage().hasAudio();
+            hasVoice = callbackQuery.getMessage().hasVoice();
+            hasSticker = callbackQuery.getMessage().hasSticker();
+            hasAnimation = callbackQuery.getMessage().hasAnimation();
+            hasLocation = callbackQuery.getMessage().hasLocation();
+            hasVideoNote = callbackQuery.getMessage().hasVideoNote();
+        }
+        var a = update.getMessage().hasPhoto();
+        logger.warning(String.format(
+                "Unhandled situation: Unexpected data from Telegram;\n" +
+                        "Id = %s;\n" +
+                        "Username = %s;\n" +
+                        "Has message = %s;\n" +
+                        "Has callback query = %s;\n" +
+                        "Has edited message = %s;\n" +
+                        "Has photo = %s;\n" +
+                        "Has video = %s;\n" +
+                        "Has location = %s;\n" +
+                        "Has document = %s;\n" +
+                        "Has audio = %s;\n" +
+                        "Has voice = %s;\n" +
+                        "Has sticker = %s;\n" +
+                        "Has animation = %s;\n" +
+                        "Has videoNote = %s;\n" +
+                        "Text = \"%s\";\n" +
+                        "Caption = \"%s\"",
+                userId, userName, hasMessage, hasCallbackQuerry, hasEditedMessage, hasPhoto,
+                hasVideo, hasLocation, hasDocument, hasAudio, hasVoice, hasSticker,
+                hasAnimation, hasVideoNote, text, caption));
     }
 
     @Override
