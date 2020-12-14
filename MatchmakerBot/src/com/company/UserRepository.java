@@ -9,16 +9,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UserRepository {
-    private HashMap<Long, User> users;
-    private ArrayList<Long> ids;
     private String hostname;
     private String dbLogin;
     private String dbPassword;
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
 
     public UserRepository(String hostname, String dbLogin, String dbPassword) {
-        users = new HashMap<>();
-        ids = new ArrayList<>();
         this.hostname = hostname;
         this.dbLogin = dbLogin;
         this.dbPassword = dbPassword;
