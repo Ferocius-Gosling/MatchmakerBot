@@ -21,6 +21,10 @@ public class AnswersStorage {
         docBuilder = docBuilderFactory.newDocumentBuilder();
         if (lang == AnswerLang.RU)
             answers = docBuilder.parse(new File(configureAnswersPath("ru.xml")));
+        if (lang == AnswerLang.EN)
+            answers = docBuilder.parse(new File(configureAnswersPath("en.xml")));
+        if (lang == AnswerLang.DE)
+            answers = docBuilder.parse(new File(configureAnswersPath("de.xml")));
     }
 
     private static String configureAnswersPath(String fileName) {

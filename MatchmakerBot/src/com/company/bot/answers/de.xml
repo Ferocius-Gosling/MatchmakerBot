@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<answers>
+    <botname>
+        MatchmakerBot - slove
+    </botname>
+    <helpMessage>
+     Schreiben Sie /reg, um sich in der Datenbank zu registrieren.
+Sie können den Fragebogen ändern, indem Sie /reg nach der Registrierung schreiben.
+Schreiben Sie /help, um diese Nachricht erneut anzuzeigen.
+Schreiben Sie / showbio, um Ihren Fragebogen zu sehen.
+Schreiben Sie /find, um andere Fragebögen zu sehen.
+Schreiben Sie /like, um den Fragebogen zu mögen.
+Schreibe /matches, um alle übereinstimmungen zu sehen.
+    </helpMessage>
+    <defaultMessage>
+        Ich verstehe Ihre Anfrage nicht. Rufen Sie /help als Referenz auf.
+    </defaultMessage>
+    <registerNameMessage>
+        Anmeldung: Schreiben Sie Ihren Namen.
+    </registerNameMessage>
+    <regAgeMessage>
+        Schreiben Sie Ihr Alter in arabischen Ziffern zwischen 0 und 150 Jahren.
+    </regAgeMessage>
+    <wrongAgeMessage>
+        Ich habe gebeten, das Alter in arabischen zahlen zu schreiben, im Bereich von 0 bis 150 Jahren.!
+Bitte umschreiben.
+    </wrongAgeMessage>
+    <regCityMessage>
+        Schreiben Sie die Stadt, in der Sie sich befinden.
+    </regCityMessage>
+    <regInfoMessage>
+        Erzählen Sie von sich selbst mit einer Nachricht.
+Sie können Ihr Foto hinzufügen.
+    </regInfoMessage>
+    <startMessage>
+        Grüße Wanderer. Mein name ist %s!
+    </startMessage>
+    <forcedRegMessage>
+        Jetzt beginnt der Registrierungsprozess.
+    </forcedRegMessage>
+    <showbioErrorMessage>
+        Sie haben sich noch nicht registriert.
+Ich kann Ihnen Ihren Fragebogen nicht zeigen.
+    </showbioErrorMessage>
+    <matchErrorMessage>
+        Sie haben sich noch nicht registriert.
+Ich kann Ihnen keine anderen Fragebögen zeigen.
+    </matchErrorMessage>
+    <noUsernameError>
+        Um den bot zu betreiben, müssen Sie username in den Telegram-Einstellungen festlegen
+    </noUsernameError>
+    <showMatchesMessage>
+        Hier sind deine übereinstimmungen:
+    </showMatchesMessage>
+    <likeMessage>
+        Warten Sie auf eine Antwort von Ihrer zweiten Hälfte.
+Um deine übereinstimmungen zu sehen, Schreibe /matches.
+Um weiterhin nach einem Seelenverwandten zu suchen, schreibe /find.
+    </likeMessage>
+    <stopMessage>
+        Hör auf, nach deinem Seelenverwandten zu suchen.
+    </stopMessage>
+    <nobodyElseMessage>
+        Kann nicht finden Sie die richtige Person :(
+Warten Sie, bis sich jemand anderes anmeldet
+    </nobodyElseMessage>
+    <forwardMessage>
+        Hinsetzen Like: /like
+verpassen: /find
+    </forwardMessage>
+    <startFindingMessage>
+        Suche nach Liebe starten: /find
+    </startFindingMessage>
+    <userInfo>
+        Name: %s
+Alter: %d
+Stadt: %s
+++++Beschreibung++++
+%s
+    </userInfo>
+</answers>

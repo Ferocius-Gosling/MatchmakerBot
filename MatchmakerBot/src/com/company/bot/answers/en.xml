@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<answers>
+    <botname>
+        MatchmakerBot - slove
+    </botname>
+    <helpMessage>
+        Write /reg to register yourself in the database.
+You can change the form by writing /reg after registration.
+Write /help to display this message again.
+Write /showbio to view your profile.
+Write /find to view other questionnaires.
+Write /like to like the profile you like.
+Write /matches to view all matches.
+    </helpMessage>
+    <defaultMessage>
+        I don't understand your request. Call /help for help.
+    </defaultMessage>
+    <registerNameMessage>
+        Registration: Write your name.
+    </registerNameMessage>
+    <regAgeMessage>
+        Write your age in Arabic numerals, ranging from 0 to 150 years.
+    </regAgeMessage>
+    <wrongAgeMessage>
+        I asked you to write the age in Arabic numerals, ranging from 0 to 150 years.!
+please Rewrite.
+    </wrongAgeMessage>
+    <regCityMessage>
+        Write the city where you are located:
+    </regCityMessage>
+    <regInfoMessage>
+        Tell us about yourself in one message.
+You can add your own photo.
+    </regInfoMessage>
+    <startMessage>
+        Howdy partner. My name is %s!
+    </startMessage>
+    <forcedRegMessage>
+        The registration process will now begin.
+    </forcedRegMessage>
+    <showbioErrorMessage>
+        You haven't registered yet.
+I can't show you any other forms.
+    </showbioErrorMessage>
+    <matchErrorMessage>
+        You haven't registered yet.
+I can't show you any other forms.
+    </matchErrorMessage>
+    <noUsernameError>
+        For the bot to work, you need to set username in the Telegram settings
+    </noUsernameError>
+    <showMatchesMessage>
+        Your matches:
+    </showMatchesMessage>
+    <likeMessage>
+        Wait for answer from your soulmate.
+To see matches send /matches.
+To continue searching for your soulmate send /find.
+    </likeMessage>
+    <stopMessage>
+        Stop finding your love.
+    </stopMessage>
+    <nobodyElseMessage>
+        I can't find anyone for you  :(
+Pls, wait for someone to register.
+    </nobodyElseMessage>
+    <forwardMessage>
+        like: /like
+Skip: /find
+    </forwardMessage>
+    <startFindingMessage>
+        To begin finding: /find
+    </startFindingMessage>
+    <userInfo>
+        Name: %s
+Age: %d
+City: %s
+++++Description++++
+%s
+    </userInfo>
+</answers>
