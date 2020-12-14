@@ -73,7 +73,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (userName != null)
                 messageToUser = bot.replyToUser(userId, userName, messageFromUser);
             else
-                messageToUser = new Message(AnswersStorage.noUsernameError);
+                messageToUser = new Message(AnswersStorage.getNoUsernameError());
 
             if (messageToUser.getPhoto() == null)
                 sendMsg(userId.toString(), messageToUser.getTextMessage()

@@ -3,7 +3,10 @@ package com.company.bot;
 import com.company.UserRepository;
 import com.company.bot.inlineKeyboard.BotInlineKeyboardButton;
 import com.company.bot.inlineKeyboard.InlineKeyboardData;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
@@ -11,12 +14,13 @@ public class DialogLogic {
     private static final Logger logger = Logger.getLogger(DialogLogic.class.getName());
 
     public Message getResponse(User user, Message messageFromUser, UserRepository users)
-            throws SQLException, ClassNotFoundException {
+            throws SQLException, ClassNotFoundException, IOException, SAXException, ParserConfigurationException {
+        AnswersStorage.configureAnswerStorage(AnswerLang.RU);
         if (!user.isRegistered())
             return registerUser(user, messageFromUser, users);
         return switch (messageFromUser.getTextMessage()) {
             case "/help":
-                yield new Message(AnswersStorage.helpMessage);
+                yield new Message(AnswersStorage.getHelpMessage());
             case "/reg":
                 yield registerUser(user);
             case "/find":
@@ -30,9 +34,9 @@ public class DialogLogic {
             case "/stop":
                 yield stop(user);
             case "/start":
-                yield new Message(AnswersStorage.startMessage + AnswersStorage.helpMessage);
+                yield new Message(AnswersStorage.getStartMessage() + AnswersStorage.getHelpMessage());
             default:
-                yield new Message(AnswersStorage.defaultMessage);
+                yield new Message(AnswersStorage.getDefaultMessage());
         };
     }
 
@@ -40,20 +44,20 @@ public class DialogLogic {
         return switch (user.getCurrentState()) {
             case FIND:
                 user.changeCurrentState(DialogState.MENU);
-                yield new Message(AnswersStorage.stopMessage);
+                yield new Message(AnswersStorage.getStopMessage());
             default:
-                yield new Message(AnswersStorage.defaultMessage);
+                yield new Message(AnswersStorage.getDefaultMessage());
         };
     }
 
     private Message showMatches(User user, UserRepository users) throws SQLException, ClassNotFoundException {
         return switch (user.getCurrentState()) {
             case START:
-                yield new Message(AnswersStorage.matchErrorMessage + registerUser(user).getTextMessage());
+                yield new Message(AnswersStorage.getMatchErrorMessage() + registerUser(user).getTextMessage());
             case MENU:
             case FIND:
                 var replyBuilder = new StringBuilder();
-                replyBuilder.append(AnswersStorage.showMatchesMessage);
+                replyBuilder.append(AnswersStorage.getShowMatchesMessage());
                 for (User u : user.getMatchedUsers()) {
                     replyBuilder.append(AnswersStorage.getUserInfo(u));
                     replyBuilder.append("\n\n");
@@ -65,7 +69,7 @@ public class DialogLogic {
                 users.clearMatches(user);
                 yield new Message(replyBuilder.toString());
             default:
-                yield new Message(AnswersStorage.defaultMessage);
+                yield new Message(AnswersStorage.getDefaultMessage());
         };
     }
 
@@ -73,25 +77,25 @@ public class DialogLogic {
         return switch (user.getCurrentState()) {
             case FIND:
                 user.addToWhoLikes(users);
-                yield new Message(AnswersStorage.likeMessage);
+                yield new Message(AnswersStorage.getLikeMessage());
             default:
-                yield new Message(AnswersStorage.defaultMessage);
+                yield new Message(AnswersStorage.getDefaultMessage());
         };
     }
 
     private Message find(User user, UserRepository users) throws SQLException {
         return switch (user.getCurrentState()) {
             case START:
-                yield new Message(AnswersStorage.matchErrorMessage + registerUser(user).getTextMessage());
+                yield new Message(AnswersStorage.getMatchErrorMessage() + registerUser(user).getTextMessage());
             case MENU:
             case FIND:
                 user.changeCurrentState(DialogState.FIND);
                 var userInQuestion = users.getNextUser(user);
-                if (userInQuestion == null) yield new Message(AnswersStorage.nobodyElseMessage);
+                if (userInQuestion == null) yield new Message(AnswersStorage.getNobodyElseMessage());
                 user.setUserInQuestion(userInQuestion);
                 users.updateUserLastFind(userInQuestion);
                 var generatedMessage = new Message(userInQuestion.getUserPhoto(), (AnswersStorage.getUserInfo(userInQuestion)
-                        + AnswersStorage.forwardMessage));
+                        + AnswersStorage.getForwardMessage()));
                 var inlineKeyboardData = new InlineKeyboardData();
                 inlineKeyboardData.addRow();
                 inlineKeyboardData.addButton(0, new BotInlineKeyboardButton("find\uD83D\uDC94", "/find"));
@@ -99,7 +103,7 @@ public class DialogLogic {
                 generatedMessage.setInlineKeyboardData(inlineKeyboardData);
                 yield generatedMessage;
             default:
-                yield new Message(AnswersStorage.defaultMessage);
+                yield new Message(AnswersStorage.getDefaultMessage());
         };
     }
 
@@ -108,13 +112,13 @@ public class DialogLogic {
             case REG_NAME:
                 user.setName(message.getTextMessage());
                 user.changeCurrentState(DialogState.REG_AGE);
-                yield new Message(AnswersStorage.regAgeMessage);
+                yield new Message(AnswersStorage.getRegAgeMessage());
             case REG_AGE:
                 yield regAge(user, message.getTextMessage());
             case REG_CITY:
                 user.setCity(message.getTextMessage());
                 user.changeCurrentState(DialogState.REG_INFO);
-                yield new Message(AnswersStorage.regInfoMessage);
+                yield new Message(AnswersStorage.getRegInfoMessage());
             case REG_INFO:
                 user.setInfo(message.getTextMessage());
                 user.setUserPhoto(message.getPhoto());
@@ -123,22 +127,22 @@ public class DialogLogic {
                 logger.info(String.format("Registration: User: %s, UserID: %s, Name: %s",
                         user.getUserName(), user.getId(), user.getName()));
                 yield new Message(user.getUserPhoto(),
-                        AnswersStorage.getUserInfo(user) + AnswersStorage.startFindingMessage);
+                        AnswersStorage.getUserInfo(user) + AnswersStorage.getStartFindingMessage());
             default:
-                yield new Message(AnswersStorage.defaultMessage);
+                yield new Message(AnswersStorage.getDefaultMessage());
         };
     }
 
     private Message showBio(User user) {
         return switch (user.getCurrentState()) {
             case START:
-                yield new Message(AnswersStorage.showbioErrorMessage + registerUser(user).getTextMessage());
+                yield new Message(AnswersStorage.getShowbioErrorMessage() + registerUser(user).getTextMessage());
             case MENU:
             case FIND:
                 yield new Message(user.getUserPhoto(),
-                        AnswersStorage.getUserInfo(user) + AnswersStorage.forwardMessage);
+                        AnswersStorage.getUserInfo(user) + AnswersStorage.getForwardMessage());
             default:
-                yield new Message(AnswersStorage.defaultMessage);
+                yield new Message(AnswersStorage.getDefaultMessage());
         };
     }
 
@@ -147,13 +151,13 @@ public class DialogLogic {
         try {
             iAge = Integer.parseInt(sAge);
         } catch (NumberFormatException nfe) {
-            return new Message(AnswersStorage.wrongAgeMessage);
+            return new Message(AnswersStorage.getWrongAgeMessage());
         }
         if ((iAge < 0) || (iAge > 150))
-            return new Message(AnswersStorage.wrongAgeMessage);
+            return new Message(AnswersStorage.getWrongAgeMessage());
         user.setAge(iAge);
         user.changeCurrentState(DialogState.REG_CITY);
-        return new Message(AnswersStorage.regCityMessage);
+        return new Message(AnswersStorage.getRegCityMessage());
     }
 
     private Message registerUser(User user) {
@@ -163,9 +167,9 @@ public class DialogLogic {
             case START:
                 user.changeCurrentState(DialogState.REG_NAME);
                 user.setReg(false);
-                yield new Message(AnswersStorage.registerNameMessage);
+                yield new Message(AnswersStorage.getRegisterNameMessage());
             default:
-                yield new Message(AnswersStorage.defaultMessage);
+                yield new Message(AnswersStorage.getDefaultMessage());
         };
 
     }

@@ -12,17 +12,18 @@ import java.util.StringJoiner;
 
 public class AnswersStorage {
 
-    private DocumentBuilderFactory docBuilderFactory;
-    private DocumentBuilder docBuilder;
+    private static DocumentBuilderFactory docBuilderFactory;
+    private static DocumentBuilder docBuilder;
     private static Document answers;
 
-    public AnswersStorage() throws ParserConfigurationException, IOException, SAXException {
+    public static void configureAnswerStorage(AnswerLang lang) throws ParserConfigurationException, IOException, SAXException {
         docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilder = docBuilderFactory.newDocumentBuilder();
-        answers = docBuilder.parse(new File(configureAnswersPath("ru.xml")));
+        if (lang == AnswerLang.RU)
+            answers = docBuilder.parse(new File(configureAnswersPath("ru.xml")));
     }
 
-    private String configureAnswersPath(String fileName) {
+    private static String configureAnswersPath(String fileName) {
         StringJoiner joiner = new StringJoiner(File.separator)
                 .add("MatchmakerBot")
                 .add("src")
@@ -36,29 +37,84 @@ public class AnswersStorage {
         return currentDir + pathToDoc;
     }
 
-    public static String helpMessage = answers.getElementsByTagName("helpMessage").item(0).getNodeValue();
+    public static String getHelpMessage() {
+        return answers.getElementsByTagName("helpMessage").item(0).getNodeValue();
+    }
 
 
-    public static String defaultMessage = answers.getElementsByTagName("defaultMessage").item(0).getNodeValue();
-    private final static String botName = answers.getElementsByTagName("botName").item(0).getNodeValue();
-    public static String registerNameMessage = answers.getElementsByTagName("registerNameMessage").item(0).getNodeValue();
-    public static String regAgeMessage = answers.getElementsByTagName("regAgeMessage").item(0).getNodeValue();
-    public static String wrongAgeMessage = answers.getElementsByTagName("wrongAgeMessage").item(0).getNodeValue();
-    public static String regCityMessage = answers.getElementsByTagName("regCityMessage").item(0).getNodeValue();
-    public static String regInfoMessage = answers.getElementsByTagName("regInfoMessage").item(0).getNodeValue();
-    public static String startMessage = String.format(answers.getElementsByTagName("startMessage").item(0).getNodeValue() +
-            "\n", botName);
-    public static String forcedRegMessage = answers.getElementsByTagName("forcedRegMessage").item(0).getNodeValue() + "\n\n";
-    public static String showbioErrorMessage = answers.getElementsByTagName("showbioErrorMessage").item(0).getNodeValue()
-            + forcedRegMessage;
-    public static String matchErrorMessage = defaultMessage = answers.getElementsByTagName("matchErrorMessage").item(0).getNodeValue();
-    public static String noUsernameError = answers.getElementsByTagName("noUsernameError").item(0).getNodeValue();
-    public static String showMatchesMessage = answers.getElementsByTagName("showMatchesMessage").item(0).getNodeValue() + "\n\n";
-    public static String likeMessage = answers.getElementsByTagName("likeMessage").item(0).getNodeValue();
-    public static String stopMessage = answers.getElementsByTagName("stopMessage").item(0).getNodeValue();
-    public static String nobodyElseMessage = answers.getElementsByTagName("nobodyElseMessage").item(0).getNodeValue();
-    public static String forwardMessage = "\n" + answers.getElementsByTagName("forwardMessage").item(0).getNodeValue() + "\n";
-    public static String startFindingMessage = "\n"+answers.getElementsByTagName("nobodyElseMessage").item(0).getNodeValue();
+    public static String getDefaultMessage() {
+        return answers.getElementsByTagName("defaultMessage").item(0).getNodeValue();
+    }
+
+    private static String getBotName() {
+        return answers.getElementsByTagName("botName").item(0).getNodeValue();
+    }
+
+    public static String getRegisterNameMessage() {
+        return answers.getElementsByTagName("registerNameMessage").item(0).getNodeValue();
+    }
+
+    public static String getRegAgeMessage() {
+        return answers.getElementsByTagName("regAgeMessage").item(0).getNodeValue();
+    }
+
+    public static String getWrongAgeMessage() {
+        return answers.getElementsByTagName("wrongAgeMessage").item(0).getNodeValue();
+    }
+
+    public static String getRegCityMessage() {
+        return answers.getElementsByTagName("regCityMessage").item(0).getNodeValue();
+    }
+
+    public static String getRegInfoMessage() {
+        return answers.getElementsByTagName("regInfoMessage").item(0).getNodeValue();
+    }
+
+    public static String getStartMessage() {
+        return String.format(answers.getElementsByTagName("startMessage").item(0).getNodeValue() +
+                "\n", getBotName());
+    }
+
+    public static String getForcedRegMessage() {
+        return answers.getElementsByTagName("forcedRegMessage").item(0).getNodeValue() + "\n\n";
+    }
+
+    public static String getShowbioErrorMessage() {
+        return answers.getElementsByTagName("showbioErrorMessage").item(0).getNodeValue()
+                + getForcedRegMessage();
+    }
+
+    public static String getMatchErrorMessage() {
+        return answers.getElementsByTagName("matchErrorMessage").item(0).getNodeValue();
+    }
+
+    public static String getNoUsernameError() {
+        return answers.getElementsByTagName("noUsernameError").item(0).getNodeValue();
+    }
+
+    public static String getShowMatchesMessage() {
+        return answers.getElementsByTagName("showMatchesMessage").item(0).getNodeValue() + "\n\n";
+    }
+
+    public static String getLikeMessage() {
+        return answers.getElementsByTagName("likeMessage").item(0).getNodeValue();
+    }
+
+    public static String getStopMessage() {
+        return answers.getElementsByTagName("stopMessage").item(0).getNodeValue();
+    }
+
+    public static String getNobodyElseMessage() {
+        return answers.getElementsByTagName("nobodyElseMessage").item(0).getNodeValue();
+    }
+
+    public static String getForwardMessage() {
+        return "\n" + answers.getElementsByTagName("forwardMessage").item(0).getNodeValue() + "\n";
+    }
+
+    public static String getStartFindingMessage() {
+        return "\n" + answers.getElementsByTagName("nobodyElseMessage").item(0).getNodeValue();
+    }
 
     public static String getUserInfo(User user) {
         return String.format(answers.getElementsByTagName("UserInfo").item(0).getNodeValue(),
