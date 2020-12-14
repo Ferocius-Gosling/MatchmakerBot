@@ -78,4 +78,13 @@
 ++++Описание++++
 %s
     </userInfo>
+    <langHelpMessage>
+Здесь можно выбрать язык бота:
+/ru - русский
+/en - english
+/de - deutsch
+    </langHelpMessage>
+    <changeLangMessage>
+        Язык успешно сменён.
+    </changeLangMessage>
 </answers>

@@ -33,6 +33,14 @@ public class DialogLogic {
                 yield showMatches(user, users);
             case "/stop":
                 yield stop(user);
+            case "/lang":
+                yield new Message(AnswersStorage.getLangHelpMessage());
+            case "/ru":
+                yield changeLang(user, AnswerLang.RU);
+            case "/en":
+                yield changeLang(user, AnswerLang.EN);
+            case "/de":
+                yield changeLang(user, AnswerLang.DE);
             case "/start":
                 yield new Message(AnswersStorage.getStartMessage() + AnswersStorage.getHelpMessage());
             default:
@@ -48,6 +56,13 @@ public class DialogLogic {
             default:
                 yield new Message(AnswersStorage.getDefaultMessage());
         };
+    }
+
+    private Message changeLang(User user, AnswerLang lang) throws SAXException,
+            IOException, ParserConfigurationException {
+        user.changeLang(lang);
+        AnswersStorage.configureAnswerStorage(user.getLang());
+        return new Message(AnswersStorage.getChangeLangMessage());
     }
 
     private Message showMatches(User user, UserRepository users) throws SQLException {

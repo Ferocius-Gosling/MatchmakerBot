@@ -120,6 +120,14 @@ public class AnswersStorage {
         return "\n" + answers.getElementsByTagName("startFindingMessage").item(0).getTextContent();
     }
 
+    public static String getLangHelpMessage() {
+        return answers.getElementsByTagName("langHelpMessage").item(0).getTextContent();
+    }
+
+    public static String getChangeLangMessage() {
+        return answers.getElementsByTagName("changeLangMessage").item(0).getTextContent();
+    }
+
     public static String getUserInfo(User user) {
         return String.format(answers.getElementsByTagName("userInfo").item(0).getTextContent(),
                 user.getName(), user.getAge(), user.getCity(), user.getInfo());

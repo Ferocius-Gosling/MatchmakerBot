@@ -21,8 +21,8 @@ public class SQLStorage implements Closeable {
             "SELECT * FROM likes WHERE who_liked=? and whom_liked=?";
     private static final String updateUsersDataQueryById =
             "UPDATE users_data SET username=?, name=?, age=?, city=?, " +
-                    "description=?, photo=?, dialog=?, user_in_question=?" +
-                    " WHERE id=?";
+                    "description=?, photo=?, dialog=?, user_in_question=?, " +
+                    "lang=? WHERE id=?";
     private static final String updateUserLastFindById =
             "UPDATE users_data SET last_find=? WHERE id=?";
     private static final String insertLikesQueryById =
@@ -97,7 +97,8 @@ public class SQLStorage implements Closeable {
             statement.setString(5, user.getInfo());
             statement.setString(7, user.getCurrentState().toString());
             statement.setLong(8, user.getUserInQuestionId());
-            statement.setLong(9, user.getId());
+            statement.setString(9, user.getLang().toString());
+            statement.setLong(10, user.getId());
             statement.executeUpdate();
             if (fileInputStream != null) {
                 fileInputStream.close();

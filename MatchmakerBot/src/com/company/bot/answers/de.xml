@@ -53,7 +53,7 @@ Ich kann Ihnen keine anderen Fragebögen zeigen.
         Hier sind deine übereinstimmungen:
     </showMatchesMessage>
     <likeMessage>
-        Warten Sie auf eine Antwort von Ihrer zweiten Hälfte.
+Warten Sie auf eine Antwort von Ihrer zweiten Hälfte.
 Um deine übereinstimmungen zu sehen, Schreibe /matches.
 Um weiterhin nach einem Seelenverwandten zu suchen, schreibe /find.
     </likeMessage>
@@ -65,7 +65,7 @@ Um weiterhin nach einem Seelenverwandten zu suchen, schreibe /find.
 Warten Sie, bis sich jemand anderes anmeldet
     </nobodyElseMessage>
     <forwardMessage>
-        Hinsetzen Like: /like
+Hinsetzen Like: /like
 verpassen: /find
     </forwardMessage>
     <startFindingMessage>
@@ -78,4 +78,13 @@ Stadt: %s
 ++++Beschreibung++++
 %s
     </userInfo>
+    <langHelpMessage>
+        Hier können Sie die Bot-Sprache auswählen:
+/ru - русский
+/en - english
+/de - deutsch
+    </langHelpMessage>
+    <changeLangMessage>
+        Sprache erfolgreich geändert.
+    </changeLangMessage>
 </answers>
